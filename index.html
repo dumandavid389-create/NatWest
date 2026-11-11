@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -108,6 +107,11 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 .editor-actions{display:flex;gap:10px;margin-top:20px}
 .editor-actions button{flex:1;border-radius:10px;padding:12px;border:1px solid #d9d2e0;background:white;color:var(--purple);font-weight:650}
 .editor-actions .save{background:var(--purple);border-color:var(--purple);color:white}
+.editor-account{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.editor-account-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.editor-account-heading h3{margin:0}
+.delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
+.add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
 @media(min-width:700px){main{padding-top:30px}.account-primary{min-height:190px}}
 @media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}.header{padding-left:14px;padding-right:14px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
@@ -239,17 +243,10 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
     <h2 id="editor-title">Edit sample accounts</h2>
     <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
     <h3>Dashboard greeting</h3>
-    <label for="edit-dashboard-name">Name shown after “Good morning”</label><input id="edit-dashboard-name" maxlength="40" value="Jamie">
-    <h3>First demo account</h3>
-    <label for="edit-name-1">Account name</label><input id="edit-name-1" maxlength="40">
-    <label for="edit-sort-1">Sort code</label><input id="edit-sort-1" inputmode="numeric" maxlength="8">
-    <label for="edit-number-1">Account number</label><input id="edit-number-1" inputmode="numeric" maxlength="8">
-    <label for="edit-balance-1">Displayed balance (£)</label><input id="edit-balance-1" inputmode="decimal">
-    <h3>Second demo account</h3>
-    <label for="edit-name-2">Account name</label><input id="edit-name-2" maxlength="40">
-    <label for="edit-sort-2">Sort code</label><input id="edit-sort-2" inputmode="numeric" maxlength="8">
-    <label for="edit-number-2">Account number</label><input id="edit-number-2" inputmode="numeric" maxlength="8">
-    <label for="edit-balance-2">Displayed balance (£)</label><input id="edit-balance-2" inputmode="decimal">
+    <label for="edit-dashboard-name">Name shown after ‘Good morning’</label>
+    <input id="edit-dashboard-name" maxlength="40" value="Jamie">
+    <div id="editor-accounts"></div>
+    <button type="button" class="add-demo-account" id="add-demo-account">＋ Add demo account</button>
     <div class="editor-actions">
       <button type="button" id="cancel-edit">Cancel</button>
       <button type="button" class="save" id="save-edit">Save changes</button>
@@ -265,13 +262,15 @@ window.setTimeout(()=>intro.remove(),4200);
 const toast=document.querySelector(".toast");
 let toastTimer;
 
+function showToast(message){
+  toast.textContent=message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=window.setTimeout(()=>toast.classList.remove("show"),2600);
+}
+
 document.querySelectorAll("[data-message]").forEach(button=>{
-  button.addEventListener("click",()=>{
-    toast.textContent=button.dataset.message;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
-  });
+  button.addEventListener("click",()=>showToast(button.dataset.message));
 });
 
 document.querySelectorAll(".nav-item").forEach(item=>{
@@ -282,26 +281,99 @@ document.querySelectorAll(".nav-item").forEach(item=>{
 });
 
 let dashboardName="Jamie";
-
 const accounts=[
   {name:"DEMO ACCOUNT",sort:"00-00-00",number:"00000000",balance:"0.53"},
   {name:"Sample Current Account",sort:"00-00-00",number:"00000000",balance:"58.44"}
 ];
 
 const editor=document.getElementById("account-editor");
-const wallet=document.querySelector(".wallet-art");
+const editorAccounts=document.getElementById("editor-accounts");
 let holdTimer=null;
 let editorOpened=false;
 
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+function formatSortCode(value){
+  const digits=String(value).replace(/\D/g,"").slice(0,6);
+  return digits.replace(/(\d{2})(?=\d)/g,"$1-");
+}
+
+function parseBalance(value){
+  const cleaned=String(value).trim().replace(/[£\s]/g,"");
+  if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(cleaned))return null;
+  const amount=Number(cleaned.replace(/,/g,""));
+  return Number.isFinite(amount)?amount.toFixed(2):null;
+}
+
+function formatBalance(value){
+  return "£"+Number(value).toLocaleString("en-GB",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function renderAccounts(){
+  const card=document.querySelector(".account-card");
+  const first=accounts[0];
+  const walletMarkup=`
+    <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+      <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+      <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+      <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+      <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+      <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+      <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+    </svg>`;
+  card.innerHTML=`
+    <div class="account-primary">
+      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+      <div class="account-name">${escapeHTML(first.name)}</div>
+      <div class="account-number">Select Account · ${escapeHTML(formatSortCode(first.sort))} · ${escapeHTML(first.number)}</div>
+      <div class="account-visual">
+        ${walletMarkup}
+        <div class="primary-balance">${formatBalance(first.balance)}</div>
+      </div>
+    </div>
+    ${accounts.slice(1).map(account=>`
+      <div class="account-secondary">
+        <div>
+          <div class="secondary-name">${escapeHTML(account.name)}</div>
+          <div class="secondary-type">${escapeHTML(formatSortCode(account.sort))} · ${escapeHTML(account.number)}</div>
+        </div>
+        <div>
+          <div class="secondary-balance">${formatBalance(account.balance)}</div>
+          <div class="available">Sample available balance</div>
+        </div>
+      </div>`).join("")}`;
+  card.querySelector(".account-menu").addEventListener("click",()=>showToast("Sample account options only."));
+  attachWalletHold();
+}
+
+function renderEditorAccounts(){
+  editorAccounts.innerHTML=accounts.map((account,index)=>`
+    <div class="editor-account" data-index="${index}">
+      <div class="editor-account-heading">
+        <h3>Demo account ${index+1}</h3>
+        <button type="button" class="delete-account" data-delete-account="${index}">Delete</button>
+      </div>
+      <label for="edit-name-${index}">Account name</label>
+      <input id="edit-name-${index}" data-field="name" maxlength="40" value="${escapeHTML(account.name)}">
+      <label for="edit-sort-${index}">Sort code</label>
+      <input id="edit-sort-${index}" data-field="sort" inputmode="numeric" maxlength="8" placeholder="00-00-00" value="${escapeHTML(formatSortCode(account.sort))}">
+      <label for="edit-number-${index}">Account number</label>
+      <input id="edit-number-${index}" data-field="number" inputmode="numeric" maxlength="8" value="${escapeHTML(account.number)}">
+      <label for="edit-balance-${index}">Displayed balance (£)</label>
+      <input id="edit-balance-${index}" data-field="balance" inputmode="decimal" placeholder="125,000.00" value="${escapeHTML(account.balance)}">
+    </div>`).join("");
+}
+
 function fillEditor(){
   document.getElementById("edit-dashboard-name").value=dashboardName;
-  accounts.forEach((account,index)=>{
-    const n=index+1;
-    document.getElementById(`edit-name-${n}`).value=account.name;
-    document.getElementById(`edit-sort-${n}`).value=account.sort;
-    document.getElementById(`edit-number-${n}`).value=account.number;
-    document.getElementById(`edit-balance-${n}`).value=account.balance;
-  });
+  renderEditorAccounts();
 }
 
 function openAccountEditor(){
@@ -312,52 +384,106 @@ function openAccountEditor(){
 }
 
 function startWalletHold(event){
-  if(event)event.preventDefault();
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+  event.preventDefault();
   clearTimeout(holdTimer);
   editorOpened=false;
-  holdTimer=window.setTimeout(openAccountEditor,3500);
+  try{event.currentTarget.setPointerCapture(event.pointerId);}catch(error){}
+  holdTimer=window.setTimeout(()=>{
+    holdTimer=null;
+    openAccountEditor();
+  },3500);
 }
 
 function endWalletHold(){
-  clearTimeout(holdTimer);
-  holdTimer=null;
+  if(holdTimer!==null){
+    clearTimeout(holdTimer);
+    holdTimer=null;
+  }
 }
 
-wallet.addEventListener("pointerdown",event=>{
-  if(event.pointerType!=="mouse")startWalletHold(event);
+function attachWalletHold(){
+  const wallet=document.querySelector(".wallet-art");
+  if(!wallet)return;
+  wallet.addEventListener("pointerdown",startWalletHold);
+  wallet.addEventListener("pointerup",endWalletHold);
+  wallet.addEventListener("pointercancel",endWalletHold);
+  wallet.addEventListener("lostpointercapture",endWalletHold);
+  wallet.addEventListener("contextmenu",event=>event.preventDefault());
+}
+
+document.getElementById("add-demo-account").addEventListener("click",()=>{
+  accounts.push({name:"New demo account",sort:"00-00-00",number:"00000000",balance:"0.00"});
+  renderEditorAccounts();
 });
-wallet.addEventListener("pointerup",endWalletHold);
-wallet.addEventListener("pointercancel",endWalletHold);
-wallet.addEventListener("pointerleave",endWalletHold);
-wallet.addEventListener("touchstart",startWalletHold,{passive:false});
-wallet.addEventListener("touchend",endWalletHold);
-wallet.addEventListener("touchcancel",endWalletHold);
-wallet.addEventListener("contextmenu",event=>event.preventDefault());
+
+editorAccounts.addEventListener("click",event=>{
+  const button=event.target.closest("[data-delete-account]");
+  if(!button)return;
+  if(accounts.length===1){
+    showToast("Keep at least one demo account.");
+    return;
+  }
+  accounts.splice(Number(button.dataset.deleteAccount),1);
+  renderEditorAccounts();
+});
+
+editorAccounts.addEventListener("input",event=>{
+  const field=event.target.dataset.field;
+  if(field==="sort"){
+    event.target.value=formatSortCode(event.target.value);
+  }else if(field==="number"){
+    event.target.value=event.target.value.replace(/\D/g,"").slice(0,8);
+  }
+});
 
 document.getElementById("save-edit").addEventListener("click",()=>{
+  const updated=[];
+  const rows=[...editorAccounts.querySelectorAll(".editor-account")];
+
+  for(let index=0;index<rows.length;index++){
+    const row=rows[index];
+    const value=field=>row.querySelector(`[data-field="${field}"]`).value.trim();
+    const name=value("name");
+    const sortDigits=value("sort").replace(/\D/g,"");
+    const number=value("number").replace(/\D/g,"");
+    const balance=parseBalance(value("balance"));
+
+    if(!name){
+      showToast(`Enter a name for demo account ${index+1}.`);
+      row.querySelector('[data-field="name"]').focus();
+      return;
+    }
+    if(sortDigits.length!==6){
+      showToast(`Enter a 6-digit sort code for demo account ${index+1}.`);
+      row.querySelector('[data-field="sort"]').focus();
+      return;
+    }
+    if(number.length!==8){
+      showToast(`Enter an 8-digit account number for demo account ${index+1}.`);
+      row.querySelector('[data-field="number"]').focus();
+      return;
+    }
+    if(balance===null){
+      showToast(`Enter a valid balance for demo account ${index+1}, e.g. 125,000.00.`);
+      row.querySelector('[data-field="balance"]').focus();
+      return;
+    }
+
+    updated.push({
+      name,
+      sort:formatSortCode(sortDigits),
+      number,
+      balance
+    });
+  }
+
   dashboardName=document.getElementById("edit-dashboard-name").value.trim()||"Jamie";
+  accounts.splice(0,accounts.length,...updated);
   document.getElementById("dashboard-greeting").textContent=`Good morning, ${dashboardName}`;
-  accounts.forEach((account,index)=>{
-    const n=index+1;
-    account.name=document.getElementById(`edit-name-${n}`).value.trim()||account.name;
-    account.sort=document.getElementById(`edit-sort-${n}`).value.trim();
-    account.number=document.getElementById(`edit-number-${n}`).value.trim();
-    account.balance=document.getElementById(`edit-balance-${n}`).value.trim();
-  });
-
-  document.getElementById("account-name-1").textContent=accounts[0].name;
-  document.getElementById("account-details-1").textContent=`Select Account · ${accounts[0].sort} · ${accounts[0].number}`;
-  document.getElementById("account-balance-1").textContent=`£${accounts[0].balance}`;
-
-  document.getElementById("account-name-2").textContent=accounts[1].name;
-  document.getElementById("account-details-2").textContent=`${accounts[1].sort} · ${accounts[1].number}`;
-  document.getElementById("account-balance-2").textContent=`£${accounts[1].balance}`;
-
+  renderAccounts();
   editor.classList.remove("open");
-  toast.textContent="Sample account details updated.";
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
+  showToast("Sample account details updated.");
 });
 
 document.getElementById("cancel-edit").addEventListener("click",()=>{
@@ -367,6 +493,8 @@ document.getElementById("cancel-edit").addEventListener("click",()=>{
 editor.addEventListener("click",event=>{
   if(event.target===editor)editor.classList.remove("open");
 });
+
+renderAccounts();
 </script>
 </body>
 </html>
