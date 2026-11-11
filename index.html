@@ -2095,6 +2095,274 @@ document.addEventListener('touchend', function(e) {
 
   document.head.appendChild(style);
 })();
+
+<script>
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+    #account-options-overlay {
+      position:fixed;inset:0;z-index:6000;background:#0009;
+      display:none;align-items:flex-end;font-family:inherit;
+    }
+    #account-options-overlay.open{display:flex}
+    .ao-sheet {
+      width:100%;max-height:90dvh;overflow:auto;background:#f2f1f7;
+      border-radius:25px 25px 0 0;padding:15px 22px calc(30px + env(safe-area-inset-bottom));
+      animation:ao-up .25s ease;
+    }
+    @keyframes ao-up{from{transform:translateY(50px);opacity:.5}to{transform:none;opacity:1}}
+    .ao-handle{width:55px;height:6px;border-radius:10px;background:#bbb;margin:0 auto 25px}
+    .ao-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+    .ao-title{font-size:25px;font-weight:500;color:#292832}
+    .ao-close{border:0;background:none;color:#641bb0;font-size:34px}
+    .ao-description{font-size:15px;line-height:1.5;color:#696570;margin-bottom:30px}
+    .ao-options{background:white;border-radius:17px;padding:5px 20px}
+    .ao-option{width:100%;display:flex;align-items:center;gap:17px;text-align:left;
+      border:0;background:white;padding:20px 0;color:#292832}
+    .ao-option+.ao-option{border-top:1px solid #ddd}
+    .ao-option-icon{font-size:27px;color:#641bb0;width:35px;text-align:center}
+    .ao-option-copy{flex:1}
+    .ao-option-copy strong{display:block;font-size:17px;font-weight:500}
+    .ao-option-copy small{display:block;color:#77737e;font-size:14px;margin-top:4px}
+    .ao-chevron{font-size:30px;color:#641bb0}
+    .ao-field{display:block;margin:18px 0 7px;font-size:14px;color:#555}
+    .ao-input,.ao-select{width:100%;height:53px;border:1px solid #ded9e5;
+      border-radius:12px;background:white;padding:0 14px;font:16px inherit;color:#292832}
+    .ao-primary{width:100%;border:0;border-radius:13px;padding:17px;
+      background:#4a087f;color:white;font-size:16px;font-weight:650;margin-top:25px}
+    .ao-secondary{width:100%;border:1px solid #4a087f;border-radius:13px;
+      padding:15px;background:transparent;color:#4a087f;font-size:15px;margin-top:10px}
+    .ao-info{background:white;border-radius:14px;padding:17px;line-height:1.6;
+      color:#625d68;font-size:14px;margin-top:20px}
+    .ao-status{display:flex;gap:12px;align-items:center;background:white;
+      border-radius:13px;padding:16px;margin-top:12px}
+    .ao-status-icon{font-size:23px;color:#641bb0}
+    .ao-status strong{display:block;color:#292832}
+    .ao-status small{color:#77737e}
+    .ao-hide-menu{position:fixed;z-index:6001;background:#ffffffed;
+      border-radius:60px;padding:18px 35px;box-shadow:0 8px 30px #0002;
+      border:1px solid #eee;display:none;min-width:180px;text-align:center}
+    .ao-hide-menu button{border:0;background:none;font-size:17px;color:#292832}
+    .ao-disclaimer{font-size:11px;line-height:1.5;text-align:center;color:#77737e;margin-top:22px}
+  `;
+  document.head.appendChild(css);
+
+  const overlay = document.createElement("div");
+  overlay.id = "account-options-overlay";
+  overlay.innerHTML = `<section class="ao-sheet" role="dialog" aria-modal="true"></section>`;
+  document.body.appendChild(overlay);
+
+  const sheet = overlay.querySelector(".ao-sheet");
+  const hideMenu = document.createElement("div");
+  hideMenu.className = "ao-hide-menu";
+  hideMenu.innerHTML = `<button type="button">◉̸ &nbsp; Hide</button>`;
+  document.body.appendChild(hideMenu);
+
+  function close() {
+    overlay.classList.remove("open");
+    hideMenu.style.display = "none";
+  }
+
+  function header(title) {
+    return `
+      <div class="ao-handle"></div>
+      <div class="ao-top">
+        <div class="ao-title">${title}</div>
+        <button class="ao-close" data-action="close">×</button>
+      </div>`;
+  }
+
+  function homePage() {
+    sheet.innerHTML = `
+      ${header("Add another account")}
+      <div class="ao-description">
+        View all your external bank accounts and mortgages with other lenders.
+      </div>
+      <div class="ao-options">
+        <button class="ao-option" data-action="bank">
+          <span class="ao-option-icon">♧</span>
+          <span class="ao-option-copy">
+            <strong>Add another bank account</strong>
+            <small>View transactions and balance.</small>
+          </span>
+          <span class="ao-chevron">›</span>
+        </button>
+        <button class="ao-option" data-action="mortgage">
+          <span class="ao-option-icon">⌂</span>
+          <span class="ao-option-copy">
+            <strong>Connect a mortgage</strong>
+            <small>View details and track progress.</small>
+          </span>
+          <span class="ao-chevron">›</span>
+        </button>
+      </div>
+      <div class="ao-disclaimer">Fictional prototype · No real accounts are connected.</div>`;
+    overlay.classList.add("open");
+  }
+
+  function bankPage() {
+    sheet.innerHTML = `
+      ${header("Add another bank account")}
+      <div class="ao-description">
+        Choose a bank to explore the account-connection demonstration.
+      </div>
+      <label class="ao-field" for="ao-bank">Select your bank</label>
+      <select class="ao-select" id="ao-bank">
+        <option value="">Choose a bank</option>
+        <option>Barclays</option>
+        <option>Halifax</option>
+        <option>Lloyds Bank</option>
+        <option>Monzo</option>
+        <option>NatWest</option>
+        <option>Revolut</option>
+        <option>Santander</option>
+        <option>Starling Bank</option>
+        <option>TSB</option>
+      </select>
+      <div class="ao-info">
+        In a real Open Banking connection, you would be redirected to your
+        bank to approve secure access. This prototype does not connect to banks.
+      </div>
+      <button class="ao-primary" data-action="bank-continue">Continue</button>
+      <button class="ao-secondary" data-action="home">Back</button>`;
+  }
+
+  function bankConfirmation(bank) {
+    sheet.innerHTML = `
+      ${header("Account connection")}
+      <div class="ao-status">
+        <span class="ao-status-icon">✓</span>
+        <span><strong>${bank} selected</strong><small>Demo selection completed</small></span>
+      </div>
+      <div class="ao-info">
+        Your next step in a real banking service would be to authorise access
+        through your bank's official secure service.
+        No credentials or financial information have been collected here.
+      </div>
+      <button class="ao-primary" data-action="home">Return to options</button>`;
+  }
+
+  function mortgagePage() {
+    sheet.innerHTML = `
+      ${header("Connect a mortgage")}
+      <div class="ao-description">
+        Enter fictional details to explore the mortgage-tracking demonstration.
+      </div>
+      <label class="ao-field" for="ao-lender">Mortgage lender</label>
+      <select class="ao-select" id="ao-lender">
+        <option value="">Select lender</option>
+        <option>NatWest</option>
+        <option>Halifax</option>
+        <option>Barclays</option>
+        <option>Santander</option>
+        <option>Nationwide</option>
+        <option>Other lender</option>
+      </select>
+      <label class="ao-field" for="ao-reference">Fictional mortgage reference</label>
+      <input class="ao-input" id="ao-reference" placeholder="e.g. DEMO12345">
+      <label class="ao-field" for="ao-postcode">Fictional property postcode</label>
+      <input class="ao-input" id="ao-postcode" placeholder="e.g. LS1 1AA">
+      <div class="ao-info">
+        Use invented details only. This demonstration does not retrieve
+        real mortgage balances or property information.
+      </div>
+      <button class="ao-primary" data-action="mortgage-continue">Continue</button>
+      <button class="ao-secondary" data-action="home">Back</button>`;
+  }
+
+  function mortgageConfirmation(lender) {
+    sheet.innerHTML = `
+      ${header("Mortgage tracking")}
+      <div class="ao-status">
+        <span class="ao-status-icon">✓</span>
+        <span><strong>${lender} selected</strong><small>Demo setup completed</small></span>
+      </div>
+      <div class="ao-info">
+        <strong>Mortgage overview</strong><br>
+        Outstanding balance: Not connected<br>
+        Monthly payment: Not connected<br>
+        Next payment: Not available<br><br>
+        A real mortgage connection would require authorisation from your lender.
+      </div>
+      <button class="ao-primary" data-action="home">Return to options</button>`;
+  }
+
+  document.addEventListener("click", function(event) {
+    const dots = event.target.closest(".add-account .more");
+    const card = event.target.closest(".add-account");
+
+    if (dots) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const rect = dots.getBoundingClientRect();
+      hideMenu.style.display = "block";
+      hideMenu.style.left = Math.max(12, Math.min(rect.left - 90, innerWidth - 200)) + "px";
+      hideMenu.style.top = Math.min(rect.bottom + 8, innerHeight - 80) + "px";
+      return;
+    }
+
+    if (card) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hideMenu.style.display = "none";
+      homePage();
+      return;
+    }
+
+    if (event.target.closest(".ao-hide-menu button")) {
+      document.querySelector(".add-account").style.display = "none";
+      hideMenu.style.display = "none";
+      return;
+    }
+
+    if (event.target === overlay) {
+      close();
+      return;
+    }
+
+    const action = event.target.closest("[data-action]")?.dataset.action;
+    if (!action) return;
+
+    event.preventDefault();
+
+    if (action === "close") close();
+    if (action === "home") homePage();
+    if (action === "bank") bankPage();
+    if (action === "mortgage") mortgagePage();
+
+    if (action === "bank-continue") {
+      const bank = sheet.querySelector("#ao-bank").value;
+      if (!bank) {
+        alert("Please select a bank first.");
+        return;
+      }
+      bankConfirmation(bank);
+    }
+
+    if (action === "mortgage-continue") {
+      const lender = sheet.querySelector("#ao-lender").value;
+      const reference = sheet.querySelector("#ao-reference").value.trim();
+      const postcode = sheet.querySelector("#ao-postcode").value.trim();
+
+      if (!lender || !reference || !postcode) {
+        alert("Please complete all three fields using fictional details.");
+        return;
+      }
+      mortgageConfirmation(lender);
+    }
+  }, true);
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".add-account .more") &&
+        !event.target.closest(".ao-hide-menu")) {
+      hideMenu.style.display = "none";
+    }
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") close();
+  });
+})();
 </script>
 
 </html>
