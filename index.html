@@ -1518,6 +1518,249 @@ document.addEventListener('touchend', function(e) {
 }, {passive:false});
 </script>
 
+<style>
+#account-feature-menu {
+  position: fixed;
+  z-index: 99999;
+  width: min(340px, calc(100vw - 40px));
+  background: #fff;
+  border-radius: 28px;
+  padding: 14px;
+  box-shadow: 0 12px 45px rgba(30,20,50,.20);
+  display: none;
+  font-family: inherit;
+}
+
+#account-feature-menu.open { display: block; }
+
+#account-feature-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 0;
+  background: transparent;
+  padding: 19px 12px;
+  border-radius: 15px;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 600;
+  color: #17151d;
+  cursor: pointer;
+}
+
+#account-feature-menu button:active {
+  background: #f3eff8;
+}
+
+#account-feature-menu .menu-icon {
+  width: 34px;
+  font-size: 23px;
+  color: #30005b;
+  text-align: center;
+}
+
+#account-feature-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: #f3f1f8;
+  display: none;
+  overflow-y: auto;
+  font-family: inherit;
+  color: #24212a;
+}
+
+#account-feature-overlay.open { display: block; }
+
+#account-feature-overlay .feature-header {
+  background: white;
+  padding: 22px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+#account-feature-overlay .feature-back {
+  border: 0;
+  background: #f1edf7;
+  color: #39006b;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+#account-feature-overlay .feature-content {
+  padding: 28px 22px;
+}
+
+#account-feature-overlay .feature-card {
+  background: white;
+  border-radius: 20px;
+  padding: 23px;
+  margin-top: 18px;
+  box-shadow: 0 5px 20px rgba(30,20,50,.05);
+}
+
+#account-feature-overlay .feature-muted {
+  color: #77717f;
+  font-size: 14px;
+}
+</style>
+
+<div id="account-feature-menu">
+  <button data-feature="payments">
+    <span class="menu-icon">⇄</span>
+    Payments and transfers
+  </button>
+  <button data-feature="statements">
+    <span class="menu-icon">▤</span>
+    My statements
+  </button>
+  <button data-feature="cards">
+    <span class="menu-icon">▣</span>
+    Manage cards
+  </button>
+</div>
+
+<div id="account-feature-overlay">
+  <div class="feature-header">
+    <button class="feature-back" id="feature-back">‹</button>
+    <strong id="feature-title">Account</strong>
+  </div>
+  <div class="feature-content" id="feature-content"></div>
+</div>
+
+<script>
+(function () {
+  const menu = document.getElementById('account-feature-menu');
+  const overlay = document.getElementById('account-feature-overlay');
+  const title = document.getElementById('feature-title');
+  const content = document.getElementById('feature-content');
+
+  const pages = {
+    payments: {
+      title: 'Payments and transfers',
+      html: `
+        <h2>Payments and transfers</h2>
+        <p class="feature-muted">Demo account services</p>
+        <div class="feature-card">
+          <h3>Make a payment</h3>
+          <p class="feature-muted">Sample payment feature</p>
+        </div>
+        <div class="feature-card">
+          <h3>Transfer money</h3>
+          <p class="feature-muted">Sample transfer feature</p>
+        </div>
+        <div class="feature-card">
+          <h3>Payment history</h3>
+          <p class="feature-muted">Your sample transactions will appear here.</p>
+        </div>`
+    },
+    statements: {
+      title: 'My statements',
+      html: `
+        <h2>My statements</h2>
+        <p class="feature-muted">Sample account statements</p>
+        <div class="feature-card">
+          <h3>November 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>
+        <div class="feature-card">
+          <h3>October 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>
+        <div class="feature-card">
+          <h3>September 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>`
+    },
+    cards: {
+      title: 'Manage cards',
+      html: `
+        <h2>Manage cards</h2>
+        <p class="feature-muted">Sample card management</p>
+        <div class="feature-card">
+          <h3>Debit card</h3>
+          <p class="feature-muted">Demo card ending 1234</p>
+        </div>
+        <div class="feature-card">
+          <h3>Card settings</h3>
+          <p class="feature-muted">Sample card settings</p>
+        </div>`
+    }
+  };
+
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+
+  function openPage(key) {
+    const page = pages[key];
+    if (!page) return;
+
+    closeMenu();
+    title.textContent = page.title;
+    content.innerHTML = page.html;
+    overlay.classList.add('open');
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('click', function(event) {
+    const path = event.composedPath();
+    const dots = path.find(el =>
+      el instanceof HTMLElement &&
+      /^(⋯|…|•••|\.\.\.)$/.test(el.textContent.trim())
+    );
+
+    if (dots) {
+      const card = path.find(el =>
+        el instanceof HTMLElement &&
+        el.textContent &&
+        /DEMO ACCOUNT|Sample Current Account/i.test(el.textContent)
+      );
+
+      if (card) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        menu.classList.remove('open');
+        const rect = dots.getBoundingClientRect();
+
+        menu.style.top = Math.min(
+          rect.bottom + 10,
+          window.innerHeight - 250
+        ) + 'px';
+
+        menu.style.left = Math.max(
+          20,
+          Math.min(rect.left - 120, window.innerWidth - 360)
+        ) + 'px';
+
+        menu.classList.add('open');
+        return;
+      }
+    }
+
+    if (!menu.contains(event.target)) {
+      closeMenu();
+    }
+  }, true);
+
+  menu.addEventListener('click', function(event) {
+    const button = event.target.closest('[data-feature]');
+    if (button) openPage(button.dataset.feature);
+  });
+
+  document.getElementById('feature-back').addEventListener('click', function() {
+    overlay.classList.remove('open');
+  });
+})();
+</script>
+
 </body>
 
 </html>
