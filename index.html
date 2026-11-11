@@ -2021,6 +2021,80 @@ document.addEventListener('touchend', function(e) {
 
   render();
 })();
+
+<script>
+(function () {
+  // Disable browser zoom through the viewport settings.
+  let viewport = document.querySelector('meta[name="viewport"]');
+
+  if (!viewport) {
+    viewport = document.createElement("meta");
+    viewport.name = "viewport";
+    document.head.appendChild(viewport);
+  }
+
+  viewport.content =
+    "width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover";
+
+  // Stop pinch and gesture zoom on iPhone/iPad.
+  ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
+    document.addEventListener(type, event => {
+      event.preventDefault();
+    }, { passive: false, capture: true });
+  });
+
+  // Stop multi-finger zoom gestures.
+  document.addEventListener("touchmove", event => {
+    if (event.touches && event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  // Stop double-tap zoom.
+  let lastTouchEnd = 0;
+
+  document.addEventListener("touchend", event => {
+    const now = Date.now();
+
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+
+    lastTouchEnd = now;
+  }, { passive: false, capture: true });
+
+  // Stop Ctrl + mouse-wheel zoom.
+  document.addEventListener("wheel", event => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  // Prevent iPhone automatically zooming into small form fields.
+  const style = document.createElement("style");
+
+  style.textContent = `
+    input,
+    select,
+    textarea,
+    button {
+      font-size: 16px !important;
+    }
+
+    input,
+    select,
+    textarea {
+      touch-action: manipulation !important;
+    }
+
+    html,
+    body {
+      touch-action: pan-x pan-y;
+    }
+  `;
+
+  document.head.appendChild(style);
+})();
 </script>
 
 </html>
