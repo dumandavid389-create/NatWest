@@ -145,7 +145,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 </header>
 
 <main>
-  <div class="section-label"><span>Good morning, Jamie</span></div>
+  <div class="section-label"><span id="dashboard-greeting">Good morning, Jamie</span></div>
 
   <section class="account-card">
     <div class="account-primary">
@@ -238,6 +238,8 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
   <section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
     <h2 id="editor-title">Edit sample accounts</h2>
     <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
+    <h3>Dashboard greeting</h3>
+    <label for="edit-dashboard-name">Name shown after “Good morning”</label><input id="edit-dashboard-name" maxlength="40" value="Jamie">
     <h3>First demo account</h3>
     <label for="edit-name-1">Account name</label><input id="edit-name-1" maxlength="40">
     <label for="edit-sort-1">Sort code</label><input id="edit-sort-1" inputmode="numeric" maxlength="8">
@@ -279,6 +281,8 @@ document.querySelectorAll(".nav-item").forEach(item=>{
   });
 });
 
+let dashboardName="Jamie";
+
 const accounts=[
   {name:"DEMO ACCOUNT",sort:"00-00-00",number:"00000000",balance:"0.53"},
   {name:"Sample Current Account",sort:"00-00-00",number:"00000000",balance:"58.44"}
@@ -290,6 +294,7 @@ let holdTimer=null;
 let editorOpened=false;
 
 function fillEditor(){
+  document.getElementById("edit-dashboard-name").value=dashboardName;
   accounts.forEach((account,index)=>{
     const n=index+1;
     document.getElementById(`edit-name-${n}`).value=account.name;
@@ -330,6 +335,8 @@ wallet.addEventListener("touchcancel",endWalletHold);
 wallet.addEventListener("contextmenu",event=>event.preventDefault());
 
 document.getElementById("save-edit").addEventListener("click",()=>{
+  dashboardName=document.getElementById("edit-dashboard-name").value.trim()||"Jamie";
+  document.getElementById("dashboard-greeting").textContent=`Good morning, ${dashboardName}`;
   accounts.forEach((account,index)=>{
     const n=index+1;
     account.name=document.getElementById(`edit-name-${n}`).value.trim()||account.name;
