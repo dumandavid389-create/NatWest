@@ -1,609 +1,1509 @@
-
 <!DOCTYPE html>
+
 <html lang="en-GB">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 <meta name="theme-color" content="#f2f1f7">
+
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
 <title>Banking Dashboard Demo</title>
+
 <style>
+
 :root{--purple:#4a087f;--deep:#310b4b;--ink:#292832;--muted:#77737e;--bg:#f2f1f7;--white:#fff;--line:#e9e6ed;--shadow:0 12px 35px rgba(37,25,53,.10);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+
 *{box-sizing:border-box}
+
 body{margin:0;background:var(--bg);color:var(--ink)}
+
 button{font:inherit;cursor:pointer}
+
 button:focus-visible{outline:3px solid #9b65cf;outline-offset:3px}
+
 .intro{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;overflow:hidden;color:white;background:radial-gradient(ellipse at center,#692b88,#42145f 58%,#2d0c45);transition:opacity .7s ease,visibility .7s ease}
+
 .intro.hide{opacity:0;visibility:hidden;pointer-events:none}
+
 .intro-top{position:absolute;top:calc(env(safe-area-inset-top) + 18px);left:0;right:0;display:flex;align-items:center;flex-direction:column;gap:10px}
+
 .intro-face{width:72px;height:72px;border-radius:21px;display:grid;place-items:center;background:#09080d;box-shadow:0 8px 28px #16082166;animation:faceAppear .55s ease both}
+
 .intro-face svg{width:45px;height:45px}
+
 .face-outline,.face-check{fill:none;stroke:#72f29a;stroke-linecap:round;stroke-linejoin:round}
+
 .face-outline{stroke-width:2.5;stroke-dasharray:145;stroke-dashoffset:145;animation:drawFace 1.05s ease .35s forwards}
+
 .face-check{stroke-width:3.4;stroke-dasharray:40;stroke-dashoffset:40;animation:drawCheck .42s ease 1.65s forwards}
+
 .intro-caption{font-size:12px;color:#f3eaf7;opacity:0;animation:fadeIn .4s ease .55s forwards}
+
 .intro-spinner{position:absolute;top:calc(env(safe-area-inset-top) + 132px);left:50%;width:18px;height:18px;margin-left:-9px;border:2px solid #ffffff38;border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+
 .intro-brand{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;animation:brandIn .7s ease .15s both}
+
 .intro-logo{width:88px;height:88px;border-radius:23px;overflow:hidden;display:grid;place-items:center}
+
 .intro-logo img{width:100%;height:100%;object-fit:contain}
+
 .intro-brand strong{font-size:28px;font-weight:800}
+
 .intro-brand small{font-size:10px;letter-spacing:1.5px;color:#eadcf1}
+
 .intro-foot{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 25px);font-size:10px;letter-spacing:.5px;color:#e6d7ed;text-align:center;padding:0 20px}
+
 @keyframes faceAppear{from{opacity:0;transform:translateY(-12px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
 @keyframes drawFace{to{stroke-dashoffset:0}}
+
 @keyframes drawCheck{to{stroke-dashoffset:0}}
+
 @keyframes fadeIn{to{opacity:1}}
+
 @keyframes spin{to{transform:rotate(360deg)}}
+
 @keyframes brandIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+
 .demo-banner{padding:11px 15px;text-align:center;color:white;background:var(--deep);font-size:12px;line-height:1.5}
+
 .demo-banner strong{color:#ffd28b}
+
 .header{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+
 .app-logo{width:58px;height:58px;border-radius:17px;overflow:hidden;display:grid;place-items:center}
+
 .app-logo img{width:100%;height:100%;object-fit:contain}
+
 .header-actions{display:flex;align-items:center;gap:24px;background:#ffffffd9;border-radius:40px;padding:12px 20px;box-shadow:0 5px 20px #2113330c}
+
 .header-actions button{border:0;background:none;color:var(--purple);font-size:27px;padding:0}
+
 .notification{position:relative}
-.notification:after{content:"19";position:absolute;top:-11px;left:-12px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#3479e8;color:white;font-size:13px}
+
+.notification:after{content:attr(data-count);position:absolute;top:-11px;left:-12px;min-width:25px;height:25px;padding:0 5px;border-radius:50px;display:grid;place-items:center;background:#3479e8;color:white;font-size:12px;font-weight:700}.notification[data-count="0"]:after{display:none}
+
 main{padding:20px 17px 115px;max-width:850px;margin:auto}
+
 .section-label{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px;color:#696570;font-size:15px}
+
 .plain-button{border:0;background:none;color:var(--purple);font-size:15px;padding:5px}
+
 .account-card{background:white;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+
 .account-primary{padding:16px 18px 13px;min-height:178px}
+
 .account-name{font-size:17px;font-weight:500}
+
 .account-number{font-size:12px;color:var(--muted);margin-top:5px}
+
 .account-menu{float:right;border:0;background:none;color:var(--purple);font-size:21px;letter-spacing:2px;padding:0}
+
 .account-visual{display:flex;align-items:flex-end;justify-content:space-between;margin-top:13px}
+
 .wallet-art{width:94px;height:78px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer}
+
 .primary-balance{font-size:22px;font-weight:750;padding-bottom:4px}
+
 .account-secondary{border-top:1px solid var(--line);padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+
 .secondary-name{font-size:16px}
+
 .secondary-type{font-size:12px;color:var(--muted);margin-top:4px}
+
 .secondary-balance{font-size:19px;font-weight:750;text-align:right}
+
 .available{font-size:11px;color:var(--muted);margin-top:4px;text-align:right}
 
 /* Add another account section */
+
 .add-account{background:white;border-radius:15px;padding:16px 17px;display:flex;align-items:center;gap:10px;margin:0 0 28px;min-height:72px;box-shadow:0 5px 20px #21133308}
+
 .bank-stack{display:flex;align-items:center;width:70px;min-width:70px;height:44px;flex:0 0 70px;overflow:hidden}
+
 .bank-stack img{width:70px;height:auto;max-height:44px;display:block;object-fit:contain}
+
 .add-text{font-size:14px;line-height:1.25;font-weight:500}
+
 .add-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.25}
+
 .more{margin-left:auto;color:var(--purple);font-size:20px;letter-spacing:2px;flex:0 0 auto}
 
 .pots-heading{margin:0 0 14px;color:#696570;font-size:15px}
+
 .new-tag{display:inline-block;margin-left:9px;padding:3px 9px;border-radius:15px;background:#3479e8;color:white;font-size:12px}
+
 .create-pot{width:100%;text-align:left;padding:22px 19px;border:2px dashed var(--purple);border-radius:14px;background:transparent;color:var(--purple);display:flex;align-items:center;gap:17px;margin-bottom:28px}
+
 .plus{font-size:31px;font-weight:300}
+
 .create-title{font-size:18px}
+
 .create-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
 .widgets-heading{margin:0 0 14px}
+
 .widget-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+
 .widget{min-height:190px;background:white;border-radius:23px;padding:20px 12px;text-align:center;box-shadow:var(--shadow)}
+
 .widget-title{font-size:14px;color:#706b76}
+
 .widget-icon{font-size:52px;color:#783bd1;margin:18px 0 9px}
+
 .widget-value{font-size:22px;font-weight:750}
+
 .widget-caption{font-size:12px;color:var(--muted);margin-top:5px}
+
 .transactions{margin-top:26px;background:white;border-radius:22px;padding:21px;box-shadow:var(--shadow)}
+
 .transactions h2{font-size:19px;margin:0 0 18px}
+
 .transaction{display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--line)}
+
 .merchant-icon{width:43px;height:43px;border-radius:50%;background:#f2eff5;display:grid;place-items:center;font-size:21px}
+
 .merchant{min-width:0}
+
 .merchant strong{font-size:14px}
+
 .merchant small{display:block;color:var(--muted);margin-top:5px;font-size:12px}
+
 .amount{margin-left:auto;font-weight:750;white-space:nowrap}
 
 /* Updated bottom navigation */
+
 .bottom-nav{
+
   position:fixed;
+
   z-index:20;
+
   left:13px;
+
   right:13px;
+
   bottom:calc(env(safe-area-inset-bottom) + 12px);
+
   max-width:820px;
+
   height:66px;
+
   margin:auto;
+
   padding:4px 6px;
+
   display:grid;
+
   grid-template-columns:repeat(5,minmax(0,1fr));
+
   align-items:center;
+
   background:rgba(255,255,255,.94);
+
   border:1px solid white;
+
   border-radius:50px;
+
   box-shadow:0 7px 30px rgba(29,20,37,.16);
+
   backdrop-filter:blur(18px);
+
   -webkit-backdrop-filter:blur(18px);
+
 }
+
 .nav-item{
+
   width:100%;
+
   height:58px;
+
   min-width:0;
+
   padding:4px 1px;
+
   border:0;
+
   border-radius:40px;
+
   background:transparent;
+
   color:#55515a;
+
   display:flex;
+
   flex-direction:column;
+
   align-items:center;
+
   justify-content:center;
+
   gap:3px;
+
   font-size:12px;
+
   font-weight:650;
+
 }
+
 .nav-icon{
+
   width:27px;
+
   height:27px;
+
   flex:0 0 27px;
+
   display:flex;
+
   align-items:center;
+
   justify-content:center;
+
 }
+
 .nav-icon svg{
+
   width:25px;
+
   height:25px;
+
   display:block;
+
   flex:0 0 25px;
+
 }
+
 .nav-item.active{
+
   background:#eeeaf4;
+
   color:var(--purple);
+
 }
+
 .nav-item.active .nav-icon svg{
+
   fill:var(--purple);
+
   stroke:var(--purple);
+
 }
+
 .nav-item:not(.active) .nav-icon svg{
+
   fill:none;
+
   stroke:currentColor;
+
 }
+
 .nav-item span:last-child{
+
   line-height:1.2;
+
   white-space:nowrap;
+
 }
 
 footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--muted);line-height:1.5}
+
 .toast{position:fixed;z-index:1200;bottom:105px;left:50%;transform:translateX(-50%);background:#30203b;color:white;padding:12px 18px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;width:max-content;max-width:90%}
+
 .toast.show{opacity:1}
+
 .editor-backdrop{position:fixed;inset:0;z-index:1100;background:#170d20a8;display:none;align-items:center;justify-content:center;padding:16px}
+
 .editor-backdrop.open{display:flex}
+
 .editor{width:min(100%,460px);max-height:90%;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0004}
+
 .editor h2{font-size:21px;margin:0 0 6px;color:var(--deep)}
+
 .editor-intro{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 17px}
+
 .editor h3{font-size:15px;margin:18px 0 10px}
+
 .editor label{display:block;font-size:12px;color:#5f5966;margin:10px 0 5px}
+
 .editor input{width:100%;height:43px;border:1px solid #dcd6e3;border-radius:9px;padding:0 11px;font:16px inherit;color:var(--ink);background:white}
+
 .editor-actions{display:flex;gap:10px;margin-top:20px}
+
 .editor-actions button{flex:1;border-radius:10px;padding:12px;border:1px solid #d9d2e0;background:white;color:var(--purple);font-weight:650}
+
 .editor-actions .save{background:var(--purple);border-color:var(--purple);color:white}
+
 .editor-account{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+
 .editor-account-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
 .editor-account-heading h3{margin:0}
+
 .delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
+
 .add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
+
+/* Notification centre — fictional prototype interactions */
+
+.notification-backdrop{position:fixed;inset:0;z-index:1050;background:rgba(20,12,29,.48);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s ease}
+
+.notification-backdrop.open{opacity:1;visibility:visible}
+
+.notification-panel{position:fixed;z-index:1060;right:0;top:0;bottom:0;width:min(100%,480px);background:#f8f7fa;box-shadow:-15px 0 45px #160d2530;transform:translateX(105%);transition:transform .28s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+.notification-panel.open{transform:translateX(0)}
+
+.notification-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;background:#fff;border-bottom:1px solid var(--line)}
+
+.notification-head h2{font-size:22px;margin:0;color:var(--deep)}
+
+.notification-head p{font-size:12px;color:var(--muted);margin:5px 0 0}
+
+.notification-close{width:38px;height:38px;border:0;border-radius:50%;background:#f1eef4;color:var(--deep);font-size:24px;line-height:1}
+
+.notification-tools{padding:14px 16px 10px;background:#fff}
+
+.notification-search{width:100%;height:43px;border:1px solid #e2dce8;border-radius:12px;background:#f8f7fa;padding:0 13px;font:14px inherit;color:var(--ink);outline:none}
+
+.notification-search:focus{border-color:#9563bd;box-shadow:0 0 0 3px #9563bd20}
+
+.notification-tabs{display:flex;gap:8px;overflow-x:auto;padding:13px 0 2px;scrollbar-width:none}
+
+.notification-tabs::-webkit-scrollbar{display:none}
+
+.notification-tab{flex:0 0 auto;border:1px solid #e4dfe9;border-radius:20px;background:#fff;color:#625b69;padding:8px 13px;font-size:12px;font-weight:650}
+
+.notification-tab.active{background:var(--purple);border-color:var(--purple);color:#fff}
+
+.notification-actions{display:flex;justify-content:flex-end;padding:9px 17px;background:#fff}
+
+.mark-all-read{border:0;background:none;color:var(--purple);font-size:12px;font-weight:700;padding:5px}
+
+.notification-list{overflow-y:auto;padding:8px 13px 25px;flex:1}
+
+.notification-item{width:100%;display:flex;align-items:flex-start;gap:12px;text-align:left;padding:15px 13px;margin:0 0 9px;border:1px solid #eeeaf1;border-radius:15px;background:#fff;color:var(--ink);box-shadow:0 3px 12px #21133308}
+
+.notification-item.unread{background:#fff;border-color:#d9c9e8}
+
+.notification-icon{width:39px;height:39px;flex:0 0 39px;border-radius:13px;display:grid;place-items:center;background:#f0eaf6;color:var(--purple);font-size:19px}
+
+.notification-copy{min-width:0;flex:1}
+
+.notification-copy strong{display:block;font-size:13px;line-height:1.35}
+
+.notification-copy p{font-size:12px;line-height:1.45;color:#77717d;margin:5px 0 7px}
+
+.notification-copy small{font-size:10px;color:#918b97}
+
+.notification-unread-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#3479e8;margin-top:5px}
+
+.notification-empty{text-align:center;color:var(--muted);font-size:13px;padding:35px 15px}
+
+.notification-detail{display:none;position:absolute;inset:0;background:#f8f7fa;z-index:2;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+.notification-detail.open{display:flex}
+
+.notification-detail-head{display:flex;align-items:center;gap:12px;padding:18px;background:#fff;border-bottom:1px solid var(--line)}
+
+.notification-back{border:0;background:none;color:var(--purple);font-size:25px;padding:0 5px}
+
+.notification-detail-body{padding:24px 21px;overflow:auto}
+
+.notification-detail-icon{width:52px;height:52px;border-radius:16px;background:#f0eaf6;display:grid;place-items:center;font-size:25px;margin-bottom:18px}
+
+.notification-detail-body h3{font-size:20px;line-height:1.3;margin:0 0 8px;color:var(--deep)}
+
+.notification-detail-date{font-size:11px;color:var(--muted);margin-bottom:20px}
+
+.notification-detail-message{font-size:14px;line-height:1.65;color:#514b58}
+
+.notification-detail-note{margin-top:24px;padding:12px;border-radius:11px;background:#eeeaf4;color:#675d70;font-size:11px;line-height:1.5}
+
+@media(max-width:600px){
+
+  .notification-panel{top:auto;left:0;right:0;bottom:0;width:100%;height:min(88dvh,760px);border-radius:22px 22px 0 0;transform:translateY(105%);padding-bottom:env(safe-area-inset-bottom)}
+
+  .notification-panel.open{transform:translateY(0)}
+
+  .notification-head{border-radius:22px 22px 0 0}
+
+}
+
 @media(min-width:700px){main{padding-top:30px}.account-primary{min-height:190px}}
+
 @media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 </style>
+
 </head>
+
 <body>
 
 <section class="intro" id="intro">
+
   <div class="intro-top">
+
     <div class="intro-face">
+
       <svg viewBox="0 0 48 48" aria-hidden="true">
+
         <path class="face-outline" d="M15 7H9v8M33 7h6v8M9 33v8h6M39 33v8h-6M17 19c1.5-2 4-3 7-3s5.5 1 7 3M17 27c1.5 3 4 5 7 5s5.5-2 7-5"/>
+
         <path class="face-check" d="M15 25l6 6 13-14"/>
+
       </svg>
+
     </div>
+
     <div class="intro-caption">Verifying device · visual demo only</div>
+
   </div>
+
   <div class="intro-spinner"></div>
+
   <div class="intro-brand">
+
     <div class="intro-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+
     <strong>NatWest</strong>
+
     <small>FICTIONAL PROTOTYPE</small>
+
   </div>
+
   <div class="intro-foot">No camera access · No real identity or bank verification</div>
+
 </section>
 
 <div class="demo-banner"><strong>Prototype only</strong> · Fictional sample account information — not connected to NatWest or any real bank.</div>
 
 <header class="header">
+
   <div class="app-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+
   <div class="header-actions">
-    <button class="notification" data-message="Sample notifications only." aria-label="Notifications">♧</button>
+
+    <button type="button" class="notification" id="open-notifications" data-count="5" aria-label="Open notifications">♧</button>
+
     <button data-message="Search is not connected in this demo." aria-label="Search">⌕</button>
+
   </div>
+
 </header>
 
+<div class="notification-backdrop" id="notification-backdrop"></div>
+
+<aside class="notification-panel" id="notification-panel" aria-label="Demo notifications" aria-hidden="true">
+
+  <div class="notification-head">
+
+    <div><h2>Notifications</h2><p id="notification-summary">5 unread notifications</p></div>
+
+    <button type="button" class="notification-close" id="close-notifications" aria-label="Close notifications">×</button>
+
+  </div>
+
+  <div class="notification-tools">
+
+    <input class="notification-search" id="notification-search" type="search" placeholder="Search notifications" aria-label="Search notifications">
+
+    <div class="notification-tabs" id="notification-tabs" aria-label="Filter notifications">
+
+      <button type="button" class="notification-tab active" data-filter="All">All</button>
+
+      <button type="button" class="notification-tab" data-filter="Unread">Unread</button>
+
+      <button type="button" class="notification-tab" data-filter="Payments">Payments</button>
+
+      <button type="button" class="notification-tab" data-filter="Cards">Cards</button>
+
+      <button type="button" class="notification-tab" data-filter="Security">Security</button>
+
+      <button type="button" class="notification-tab" data-filter="Statements">Statements</button>
+
+      <button type="button" class="notification-tab" data-filter="Account">Account</button>
+
+    </div>
+
+  </div>
+
+  <div class="notification-actions"><button type="button" class="mark-all-read" id="mark-all-read">Mark all as read</button></div>
+
+  <div class="notification-list" id="notification-list" aria-live="polite"></div>
+
+  <section class="notification-detail" id="notification-detail" aria-label="Notification details">
+
+    <div class="notification-detail-head">
+
+      <button type="button" class="notification-back" id="notification-detail-back" aria-label="Back to notifications">‹</button>
+
+      <strong>Notification details</strong>
+
+    </div>
+
+    <div class="notification-detail-body" id="notification-detail-body"></div>
+
+  </section>
+
+</aside>
+
 <main>
+
   <div class="section-label"><span id="dashboard-greeting">Good morning, Jamie</span></div>
 
   <section class="account-card">
+
     <div class="account-primary">
+
       <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+
       <div class="account-name" id="account-name-1">DEMO ACCOUNT</div>
+
       <div class="account-number" id="account-details-1">Select Account · Sample number · 00-00-00</div>
+
       <div class="account-visual">
+
         <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+
           <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
           <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+
           <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
           <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+
           <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+
           <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+
         </svg>
+
         <div class="primary-balance" id="account-balance-1">£0.53</div>
+
       </div>
+
     </div>
+
     <div class="account-secondary">
+
       <div>
+
         <div class="secondary-name" id="account-name-2">Sample Current Account</div>
+
         <div class="secondary-type" id="account-details-2">Fictional sample account</div>
+
       </div>
+
       <div>
+
         <div class="secondary-balance" id="account-balance-2">£58.44</div>
+
         <div class="available">Sample available balance</div>
+
       </div>
+
     </div>
+
   </section>
 
   <button class="add-account" data-message="Adding accounts is not available in this demo." style="width:100%;border:0;text-align:left;color:inherit">
+
     <span class="bank-stack"><img src="bank-logo-stack.png" alt="Halifax, Barclays and RBS logos"></span>
+
     <span><span class="add-text">Add another account</span><span class="add-sub" style="display:block">Bank accounts &amp; mortgages</span></span>
+
     <span class="more">•••</span>
+
   </button>
 
   <div class="pots-heading">Pots <span class="new-tag">New</span></div>
+
   <button class="create-pot" data-message="Creating pots is disabled in this demo.">
+
     <span class="plus">＋</span>
+
     <span><span class="create-title">Create a pot</span><span class="create-sub" style="display:block">Separate money from your main account</span></span>
+
   </button>
 
   <div class="section-label widgets-heading">
+
     <span>Widgets</span>
+
     <button class="plain-button" data-message="Widget editing is disabled in this demo.">Edit　›</button>
+
   </div>
 
   <section class="widget-grid">
+
     <article class="widget">
+
       <div class="widget-title">Credit score</div><div class="widget-icon">◉</div>
+
       <div class="widget-value">—</div><div class="widget-caption">Sample widget</div>
+
     </article>
+
     <article class="widget">
+
       <div class="widget-title">Weekly spend</div><div class="widget-icon">▥</div>
+
       <div class="widget-value">£19.42</div><div class="widget-caption">Fictional sample data</div>
+
     </article>
+
   </section>
 
   <section class="transactions">
+
     <h2>Recent transactions</h2>
+
     <article class="transaction">
+
       <div class="merchant-icon">☕</div>
+
       <div class="merchant"><strong>COFFEE HOUSE</strong><small>Today · 09:14 · Sample card</small></div>
+
       <div class="amount">−£4.60</div>
+
     </article>
+
     <article class="transaction">
+
       <div class="merchant-icon">🛒</div>
+
       <div class="merchant"><strong>GROCERY MARKET</strong><small>Yesterday · Sample card</small></div>
+
       <div class="amount">−£18.25</div>
+
     </article>
+
   </section>
+
 </main>
 
-<!-- Updated bottom navigation HTML -->
 <nav class="bottom-nav" aria-label="Demo navigation">
 
   <button class="nav-item active" data-message="You are viewing the demo home screen.">
+
     <span class="nav-icon">
-      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
-        <path d="M3 10.5 12 3l9 7.5V21H14v-7h-4v7H3z"/>
-      </svg>
-    </span>
-    <span>Home</span>
+
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H14v-7h-4v7H3z"/></svg>
+
+    </span><span>Home</span>
+
   </button>
 
   <button class="nav-item" data-message="Help is not connected in this demo.">
+
     <span class="nav-icon">
+
       <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
         <path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9 9 0 0 1-4-.9L3 21l1.8-4.3A8 8 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/>
-        <path d="M9.7 9a2.4 2.4 0 1 1 4.3 1.5c-1 1.1-2 1.4-2 3"/>
-        <path d="M12 17h.01"/>
+
+        <path d="M9.7 9a2.4 2.4 0 1 1 4.3 1.5c-1 1.1-2 1.4-2 3"/><path d="M12 17h.01"/>
+
       </svg>
-    </span>
-    <span>Help</span>
+
+    </span><span>Help</span>
+
   </button>
 
   <button class="nav-item" data-message="Payments are disabled in this demo.">
+
     <span class="nav-icon">
-      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M3 8h17m-4-4 4 4-4 4"/>
-        <path d="M21 16H4m4-4-4 4 4 4"/>
-      </svg>
-    </span>
-    <span>Payments</span>
+
+      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h17m-4-4 4 4-4 4"/><path d="M21 16H4m4-4-4 4 4 4"/></svg>
+
+    </span><span>Payments</span>
+
   </button>
 
   <button class="nav-item" data-message="Insights use fictional sample data.">
+
     <span class="nav-icon">
+
       <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
         <path d="M4 20V13h4v7M10 20V8h4v12M16 20V3h4v17"/>
+
       </svg>
-    </span>
-    <span>Insights</span>
+
+    </span><span>Insights</span>
+
   </button>
 
   <button class="nav-item" data-message="Applications are disabled in this demo.">
+
     <span class="nav-icon">
+
       <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
         <rect x="3" y="3" width="13" height="16" rx="1.5"/>
+
         <path d="M8 7h4M8 11h4M8 21h13V8l-5-5M16 3v5h5"/>
+
       </svg>
-    </span>
-    <span>Apply</span>
+
+    </span><span>Apply</span>
+
   </button>
 
 </nav>
 
 <footer>Fictional visual prototype only. Not an official NatWest service. No real accounts, authentication, payments or banking services are connected.</footer>
+
 <div class="toast" role="status" aria-live="polite"></div>
 
 <div class="editor-backdrop" id="account-editor">
+
   <section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+
     <h2 id="editor-title">Edit sample accounts</h2>
+
     <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
+
     <h3>Dashboard greeting</h3>
+
     <label for="edit-dashboard-name">Name shown after ‘Good morning’</label>
+
     <input id="edit-dashboard-name" maxlength="40" value="Jamie">
+
     <div id="editor-accounts"></div>
+
     <button type="button" class="add-demo-account" id="add-demo-account">＋ Add demo account</button>
+
     <div class="editor-actions">
+
       <button type="button" id="cancel-edit">Cancel</button>
+
       <button type="button" class="save" id="save-edit">Save changes</button>
+
     </div>
+
   </section>
+
 </div>
 
 <script>
+
 const intro=document.getElementById("intro");
+
 window.setTimeout(()=>intro.classList.add("hide"),3400);
+
 window.setTimeout(()=>intro.remove(),4200);
 
 const toast=document.querySelector(".toast");
+
 let toastTimer;
 
 function showToast(message){
+
   toast.textContent=message;
+
   toast.classList.add("show");
+
   clearTimeout(toastTimer);
+
   toastTimer=window.setTimeout(()=>toast.classList.remove("show"),2600);
+
 }
 
-document.querySelectorAll("[data-message]").forEach(button=>{
+document.querySelectorAll('[data-message]:not(.notification)').forEach(button=>{
+
   button.addEventListener("click",()=>showToast(button.dataset.message));
+
 });
 
 document.querySelectorAll(".nav-item").forEach(item=>{
+
   item.addEventListener("click",()=>{
+
     document.querySelectorAll(".nav-item").forEach(nav=>nav.classList.remove("active"));
+
     item.classList.add("active");
+
   });
+
 });
 
+/* Fictional demo notification data */
+
+const notifications=[
+
+  {id:1,category:"Payments",icon:"↗",title:"Payment received",preview:"A sample payment has been added to your demo account.",message:"This is a fictional incoming payment notification for the prototype. No real payment has taken place.",date:"Today · 09:42",unread:true},
+
+  {id:2,category:"Cards",icon:"▣",title:"Card payment",preview:"A sample card payment was made.",message:"This is a fictional card transaction notification. It does not represent a real purchase or bank transaction.",date:"Today · 08:30",unread:true},
+
+  {id:3,category:"Security",icon:"⌑",title:"Security reminder",preview:"Remember to keep your sign-in details private.",message:"Never share passwords, PINs or one-time passcodes. This is a general demo reminder and is not a real security alert.",date:"Yesterday · 18:20",unread:true},
+
+  {id:4,category:"Account",icon:"◉",title:"Account overview updated",preview:"Your sample account overview is ready to view.",message:"The dashboard displays fictional sample account information. No real account has been updated.",date:"Yesterday · 14:15",unread:true},
+
+  {id:5,category:"Statements",icon:"▤",title:"Sample statement available",preview:"Your fictional monthly statement is ready.",message:"This is a demonstration notification. No actual bank statement has been generated.",date:"Yesterday · 09:10",unread:true},
+
+  {id:6,category:"Payments",icon:"↙",title:"Standing order reminder",preview:"A sample standing order reminder.",message:"This is an example reminder for the fictional prototype. No standing order is scheduled.",date:"12 Nov · 11:20",unread:false},
+
+  {id:7,category:"Cards",icon:"▣",title:"Card settings",preview:"Review your fictional card settings.",message:"This sample notification demonstrates a card settings update. No real card settings have changed.",date:"11 Nov · 16:40",unread:false},
+
+  {id:8,category:"Security",icon:"⌑",title:"Online safety tips",preview:"A few reminders to help protect your information.",message:"Use strong, unique passwords and never share one-time passcodes. This is general educational information.",date:"10 Nov · 10:05",unread:false},
+
+  {id:9,category:"Account",icon:"◉",title:"Profile details",preview:"Your demo profile details can be reviewed.",message:"This is a fictional profile reminder. It does not refer to a real bank profile.",date:"9 Nov · 15:30",unread:false},
+
+  {id:10,category:"Statements",icon:"▤",title:"Monthly summary",preview:"Your sample monthly summary is ready.",message:"This is a fictional monthly summary notification for the dashboard demonstration.",date:"8 Nov · 09:00",unread:false},
+
+  {id:11,category:"Payments",icon:"↗",title:"Payment scheduled",preview:"A sample payment reminder.",message:"This is only a demonstration. No real payment has been scheduled.",date:"7 Nov · 12:10",unread:false},
+
+  {id:12,category:"Cards",icon:"▣",title:"Contactless payments",preview:"Learn about contactless payment safety.",message:"This notification contains general information for the fictional prototype.",date:"6 Nov · 13:45",unread:false},
+
+  {id:13,category:"Security",icon:"⌑",title:"Device safety",preview:"Keep your device software up to date.",message:"Install operating system and app updates to help protect your device. This is not a real security alert.",date:"5 Nov · 08:15",unread:false},
+
+  {id:14,category:"Account",icon:"◉",title:"Account information",preview:"Your sample account information is available.",message:"All account details in this prototype are fictional and editable locally.",date:"4 Nov · 17:25",unread:false},
+
+  {id:15,category:"Statements",icon:"▤",title:"Statement reminder",preview:"A sample statement reminder.",message:"This is a fictional reminder. No real statement is available through this prototype.",date:"3 Nov · 10:40",unread:false},
+
+  {id:16,category:"Payments",icon:"↙",title:"Payment confirmation",preview:"Example payment confirmation.",message:"This is not a real payment confirmation. It is sample content for the notification centre.",date:"2 Nov · 14:05",unread:false},
+
+  {id:17,category:"Cards",icon:"▣",title:"Card usage reminder",preview:"Review your sample card activity.",message:"The card activity shown in this prototype is fictional and is not linked to a payment card.",date:"1 Nov · 11:30",unread:false},
+
+  {id:18,category:"Security",icon:"⌑",title:"Privacy reminder",preview:"Review your privacy settings regularly.",message:"This is a general privacy reminder for the demo.",date:"31 Oct · 09:20",unread:false},
+
+  {id:19,category:"Account",icon:"◉",title:"Personal details",preview:"Your demo personal details are available.",message:"This is a sample account notification. No personal details have been submitted or verified.",date:"30 Oct · 16:10",unread:false},
+
+  {id:20,category:"Statements",icon:"▤",title:"Previous statement",preview:"A sample previous statement reminder.",message:"No real statement is attached to this fictional notification.",date:"29 Oct · 10:15",unread:false},
+
+  {id:21,category:"Payments",icon:"↗",title:"Payment activity",preview:"View your sample payment activity.",message:"The payment activity in this prototype is fictional.",date:"28 Oct · 13:00",unread:false},
+
+  {id:22,category:"Cards",icon:"▣",title:"Card information",preview:"Sample card information reminder.",message:"This is a fictional card notification and is not connected to a real card.",date:"27 Oct · 12:35",unread:false},
+
+  {id:23,category:"Security",icon:"⌑",title:"Keep your account safe",preview:"Never share your password or PIN.",message:"This is general security advice. The prototype does not perform real authentication.",date:"26 Oct · 08:50",unread:false},
+
+  {id:24,category:"Account",icon:"◉",title:"Account overview",preview:"Your demo overview is ready.",message:"This notification is included as sample content in the fictional dashboard.",date:"25 Oct · 15:40",unread:false},
+
+  {id:25,category:"Statements",icon:"▤",title:"Statement information",preview:"Example statement information.",message:"This is a sample notification only. It does not contain a real bank statement.",date:"24 Oct · 09:30",unread:false}
+
+];
+
+const notificationPanel=document.getElementById("notification-panel");
+
+const notificationBackdrop=document.getElementById("notification-backdrop");
+
+const notificationButton=document.getElementById("open-notifications");
+
+const notificationList=document.getElementById("notification-list");
+
+const notificationSearch=document.getElementById("notification-search");
+
+const notificationSummary=document.getElementById("notification-summary");
+
+const notificationDetail=document.getElementById("notification-detail");
+
+const notificationDetailBody=document.getElementById("notification-detail-body");
+
+let activeNotificationFilter="All";
+
+function unreadNotificationCount(){
+
+  return notifications.filter(item=>item.unread).length;
+
+}
+
+function updateNotificationCount(){
+
+  const count=unreadNotificationCount();
+
+  notificationButton.dataset.count=String(count);
+
+  notificationSummary.textContent=count===1?"1 unread notification":`${count} unread notifications`;
+
+}
+
+function openNotifications(){
+
+  notificationPanel.classList.add("open");
+
+  notificationBackdrop.classList.add("open");
+
+  notificationPanel.setAttribute("aria-hidden","false");
+
+  document.body.style.overflow="hidden";
+
+  renderNotifications();
+
+}
+
+function closeNotifications(){
+
+  notificationPanel.classList.remove("open");
+
+  notificationBackdrop.classList.remove("open");
+
+  notificationPanel.setAttribute("aria-hidden","true");
+
+  notificationDetail.classList.remove("open");
+
+  document.body.style.overflow="";
+
+}
+
+function renderNotifications(){
+
+  const search=notificationSearch.value.trim().toLowerCase();
+
+  const filtered=notifications.filter(item=>{
+
+    const matchesFilter=
+
+      activeNotificationFilter==="All"||
+
+      (activeNotificationFilter==="Unread"&&item.unread)||
+
+      item.category===activeNotificationFilter;
+
+    const matchesSearch=
+
+      !search||
+
+      item.title.toLowerCase().includes(search)||
+
+      item.preview.toLowerCase().includes(search)||
+
+      item.category.toLowerCase().includes(search)||
+
+      item.message.toLowerCase().includes(search);
+
+    return matchesFilter&&matchesSearch;
+
+  });
+
+  notificationList.innerHTML="";
+
+  if(filtered.length===0){
+
+    notificationList.innerHTML='<div class="notification-empty">No notifications found.</div>';
+
+    updateNotificationCount();
+
+    return;
+
+  }
+
+  filtered.forEach(item=>{
+
+    const button=document.createElement("button");
+
+    button.type="button";
+
+    button.className=`notification-item${item.unread?" unread":""}`;
+
+    button.innerHTML=`
+
+      <span class="notification-icon">${item.icon}</span>
+
+      <span class="notification-copy">
+
+        <strong>${escapeHTML(item.title)}</strong>
+
+        <p>${escapeHTML(item.preview)}</p>
+
+        <small>${escapeHTML(item.date)} · ${escapeHTML(item.category)}</small>
+
+      </span>
+
+      ${item.unread?'<span class="notification-unread-dot" aria-label="Unread"></span>':""}
+
+    `;
+
+    button.addEventListener("click",()=>openNotificationDetail(item.id));
+
+    notificationList.appendChild(button);
+
+  });
+
+  updateNotificationCount();
+
+}
+
+function openNotificationDetail(id){
+
+  const item=notifications.find(notification=>notification.id===id);
+
+  if(!item)return;
+
+  item.unread=false;
+
+  notificationDetailBody.innerHTML=`
+
+    <div class="notification-detail-icon">${item.icon}</div>
+
+    <h3>${escapeHTML(item.title)}</h3>
+
+    <div class="notification-detail-date">${escapeHTML(item.date)} · ${escapeHTML(item.category)}</div>
+
+    <div class="notification-detail-message">${escapeHTML(item.message)}</div>
+
+    <div class="notification-detail-note">Fictional demonstration notification. This prototype is not connected to a real bank or account.</div>
+
+  `;
+
+  notificationDetail.classList.add("open");
+
+  renderNotifications();
+
+}
+
+document.getElementById("notification-detail-back").addEventListener("click",()=>{
+
+  notificationDetail.classList.remove("open");
+
+});
+
+document.getElementById("open-notifications").addEventListener("click",openNotifications);
+
+document.getElementById("close-notifications").addEventListener("click",closeNotifications);
+
+notificationBackdrop.addEventListener("click",closeNotifications);
+
+notificationSearch.addEventListener("input",renderNotifications);
+
+document.getElementById("notification-tabs").addEventListener("click",event=>{
+
+  const button=event.target.closest("[data-filter]");
+
+  if(!button)return;
+
+  activeNotificationFilter=button.dataset.filter;
+
+  document.querySelectorAll(".notification-tab").forEach(tab=>{
+
+    tab.classList.toggle("active",tab===button);
+
+  });
+
+  renderNotifications();
+
+});
+
+document.getElementById("mark-all-read").addEventListener("click",()=>{
+
+  notifications.forEach(item=>item.unread=false);
+
+  renderNotifications();
+
+  showToast("All demo notifications marked as read.");
+
+});
+
+document.addEventListener("keydown",event=>{
+
+  if(event.key==="Escape"&&notificationPanel.classList.contains("open")){
+
+    closeNotifications();
+
+  }
+
+});
+
+updateNotificationCount();
+
+/* Original navigation and account editor code continues below */
+
 let dashboardName="Jamie";
+
 const accounts=[
+
   {name:"DEMO ACCOUNT",sort:"00-00-00",number:"00000000",balance:"0.53"},
+
   {name:"Sample Current Account",sort:"00-00-00",number:"00000000",balance:"58.44"}
+
 ];
 
 const editor=document.getElementById("account-editor");
+
 const editorAccounts=document.getElementById("editor-accounts");
+
 let holdTimer=null;
+
 let editorOpened=false;
 
 function escapeHTML(value){
+
   return String(value).replace(/[&<>"']/g,char=>({
+
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+
   })[char]);
+
 }
 
 function formatSortCode(value){
+
   const digits=String(value).replace(/\D/g,"").slice(0,6);
+
   return digits.replace(/(\d{2})(?=\d)/g,"$1-");
+
 }
 
 function parseBalance(value){
+
   const cleaned=String(value).trim().replace(/[£\s]/g,"");
+
   if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(cleaned))return null;
+
   const amount=Number(cleaned.replace(/,/g,""));
+
   return Number.isFinite(amount)?amount.toFixed(2):null;
+
 }
 
 function formatBalance(value){
+
   return "£"+Number(value).toLocaleString("en-GB",{
+
     minimumFractionDigits:2,
+
     maximumFractionDigits:2
+
   });
+
 }
 
 function renderAccounts(){
+
   const card=document.querySelector(".account-card");
+
   const first=accounts[0];
+
   const walletMarkup=`
+
     <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+
       <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
       <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+
       <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
       <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+
       <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+
       <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+
     </svg>`;
+
   card.innerHTML=`
+
     <div class="account-primary">
+
       <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+
       <div class="account-name">${escapeHTML(first.name)}</div>
+
       <div class="account-number">Select Account · ${escapeHTML(formatSortCode(first.sort))} · ${escapeHTML(first.number)}</div>
+
       <div class="account-visual">
+
         ${walletMarkup}
+
         <div class="primary-balance">${formatBalance(first.balance)}</div>
+
       </div>
+
     </div>
+
     ${accounts.slice(1).map(account=>`
+
       <div class="account-secondary">
+
         <div>
+
           <div class="secondary-name">${escapeHTML(account.name)}</div>
+
           <div class="secondary-type">${escapeHTML(formatSortCode(account.sort))} · ${escapeHTML(account.number)}</div>
+
         </div>
+
         <div>
+
           <div class="secondary-balance">${formatBalance(account.balance)}</div>
+
           <div class="available">Sample available balance</div>
+
         </div>
+
       </div>`).join("")}`;
+
   card.querySelector(".account-menu").addEventListener("click",()=>showToast("Sample account options only."));
+
   attachWalletHold();
+
 }
 
 function renderEditorAccounts(){
+
   editorAccounts.innerHTML=accounts.map((account,index)=>`
+
     <div class="editor-account" data-index="${index}">
+
       <div class="editor-account-heading">
+
         <h3>Demo account ${index+1}</h3>
+
         <button type="button" class="delete-account" data-delete-account="${index}">Delete</button>
+
       </div>
+
       <label for="edit-name-${index}">Account name</label>
+
       <input id="edit-name-${index}" data-field="name" maxlength="40" value="${escapeHTML(account.name)}">
+
       <label for="edit-sort-${index}">Sort code</label>
+
       <input id="edit-sort-${index}" data-field="sort" inputmode="numeric" maxlength="8" placeholder="00-00-00" value="${escapeHTML(formatSortCode(account.sort))}">
+
       <label for="edit-number-${index}">Account number</label>
+
       <input id="edit-number-${index}" data-field="number" inputmode="numeric" maxlength="8" value="${escapeHTML(account.number)}">
+
       <label for="edit-balance-${index}">Displayed balance (£)</label>
+
       <input id="edit-balance-${index}" data-field="balance" inputmode="decimal" placeholder="125,000.00" value="${escapeHTML(account.balance)}">
+
     </div>`).join("");
+
 }
 
 function fillEditor(){
+
   document.getElementById("edit-dashboard-name").value=dashboardName;
+
   renderEditorAccounts();
+
 }
 
 function openAccountEditor(){
+
   if(editorOpened)return;
+
   editorOpened=true;
+
   fillEditor();
+
   editor.classList.add("open");
+
 }
 
 function startWalletHold(event){
+
   if(event.pointerType==="mouse"&&event.button!==0)return;
+
   event.preventDefault();
+
   clearTimeout(holdTimer);
+
   editorOpened=false;
+
   try{event.currentTarget.setPointerCapture(event.pointerId);}catch(error){}
+
   holdTimer=window.setTimeout(()=>{
+
     holdTimer=null;
+
     openAccountEditor();
+
   },3500);
+
 }
 
 function endWalletHold(){
+
   if(holdTimer!==null){
+
     clearTimeout(holdTimer);
+
     holdTimer=null;
+
   }
+
 }
 
 function attachWalletHold(){
+
   const wallet=document.querySelector(".wallet-art");
+
   if(!wallet)return;
+
   wallet.addEventListener("pointerdown",startWalletHold);
+
   wallet.addEventListener("pointerup",endWalletHold);
+
   wallet.addEventListener("pointercancel",endWalletHold);
+
   wallet.addEventListener("lostpointercapture",endWalletHold);
+
   wallet.addEventListener("contextmenu",event=>event.preventDefault());
+
 }
 
 document.getElementById("add-demo-account").addEventListener("click",()=>{
+
   accounts.push({name:"New demo account",sort:"00-00-00",number:"00000000",balance:"0.00"});
+
   renderEditorAccounts();
+
 });
 
 editorAccounts.addEventListener("click",event=>{
+
   const button=event.target.closest("[data-delete-account]");
+
   if(!button)return;
+
   if(accounts.length===1){
+
     showToast("Keep at least one demo account.");
+
     return;
+
   }
+
   accounts.splice(Number(button.dataset.deleteAccount),1);
+
   renderEditorAccounts();
+
 });
 
 editorAccounts.addEventListener("input",event=>{
+
   const field=event.target.dataset.field;
+
   if(field==="sort"){
+
     event.target.value=formatSortCode(event.target.value);
+
   }else if(field==="number"){
+
     event.target.value=event.target.value.replace(/\D/g,"").slice(0,8);
+
   }
+
 });
 
 document.getElementById("save-edit").addEventListener("click",()=>{
+
   const updated=[];
+
   const rows=[...editorAccounts.querySelectorAll(".editor-account")];
 
   for(let index=0;index<rows.length;index++){
+
     const row=rows[index];
+
     const value=field=>row.querySelector(`[data-field="${field}"]`).value.trim();
+
     const name=value("name");
+
     const sortDigits=value("sort").replace(/\D/g,"");
+
     const number=value("number").replace(/\D/g,"");
+
     const balance=parseBalance(value("balance"));
 
     if(!name){
+
       showToast(`Enter a name for demo account ${index+1}.`);
+
       row.querySelector('[data-field="name"]').focus();
+
       return;
+
     }
+
     if(sortDigits.length!==6){
+
       showToast(`Enter a 6-digit sort code for demo account ${index+1}.`);
+
       row.querySelector('[data-field="sort"]').focus();
+
       return;
+
     }
+
     if(number.length!==8){
+
       showToast(`Enter an 8-digit account number for demo account ${index+1}.`);
+
       row.querySelector('[data-field="number"]').focus();
+
       return;
+
     }
+
     if(balance===null){
+
       showToast(`Enter a valid balance for demo account ${index+1}, e.g. 125,000.00.`);
+
       row.querySelector('[data-field="balance"]').focus();
+
       return;
+
     }
 
     updated.push({
+
       name,
+
       sort:formatSortCode(sortDigits),
+
       number,
+
       balance
+
     });
+
   }
 
   dashboardName=document.getElementById("edit-dashboard-name").value.trim()||"Jamie";
+
   accounts.splice(0,accounts.length,...updated);
+
   document.getElementById("dashboard-greeting").textContent=`Good morning, ${dashboardName}`;
+
   renderAccounts();
+
   editor.classList.remove("open");
+
   showToast("Sample account details updated.");
+
 });
 
 document.getElementById("cancel-edit").addEventListener("click",()=>{
+
   editor.classList.remove("open");
+
 });
 
 editor.addEventListener("click",event=>{
+
   if(event.target===editor)editor.classList.remove("open");
+
 });
 
 renderAccounts();
+
 </script>
+
 </body>
+
 </html>
