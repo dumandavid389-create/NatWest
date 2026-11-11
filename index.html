@@ -1902,4 +1902,125 @@ document.addEventListener('touchend', function(e) {
 
 </body>
 
+<script>
+(function () {
+  const links = [
+    ["Online Banking", "Secure online banking and login help", "https://www.natwest.com/ways-to-bank/online-banking.html", "🔐"],
+    ["Current Accounts", "Explore NatWest current accounts", "https://www.natwest.com/", "💳"],
+    ["Savings & ISAs", "Savings accounts and cash ISAs", "https://www.natwest.com/", "💰"],
+    ["Mortgages", "Mortgage information and support", "https://www.natwest.com/", "🏠"],
+    ["Credit Cards", "Explore credit cards", "https://www.natwest.com/", "💳"],
+    ["Loans & Overdrafts", "Personal borrowing information", "https://www.natwest.com/", "📄"],
+    ["Help & Support", "Get help with NatWest products", "https://www.natwest.com/support-centre.html", "💬"],
+    ["Contact NatWest", "Official contact details and assistance", "https://www.natwest.com/support-centre/contact-us.html", "☎️"],
+    ["Find a Branch", "Search for branches, ATMs and banking hubs", "https://www.natwest.com/search-results/locator.html", "📍"],
+    ["Security Centre", "Fraud prevention and security information", "https://www.natwest.com/", "🛡️"],
+    ["NatWest Homepage", "Visit the official NatWest website", "https://www.natwest.com/", "🌐"]
+  ];
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #demo-search-overlay {
+      position:fixed; inset:0; z-index:5000;
+      background:#f2f1f7; display:none;
+      flex-direction:column; overflow-y:auto;
+      padding:calc(env(safe-area-inset-top) + 18px) 18px 35px;
+      font-family:inherit;
+    }
+    #demo-search-overlay.open { display:flex; }
+    .ds-top {display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .ds-title {font-size:25px;font-weight:750;color:#292832}
+    #ds-close {border:0;background:white;border-radius:50%;width:42px;height:42px;font-size:24px;color:#4a087f}
+    .ds-search {display:flex;align-items:center;gap:10px;background:white;border:1px solid #e5e0eb;border-radius:16px;padding:0 15px;height:56px;box-shadow:0 5px 18px #2113330a}
+    .ds-search span {font-size:23px;color:#641bb0}
+    #ds-input {border:0;outline:0;background:transparent;width:100%;font:inherit;font-size:16px;color:#292832}
+    .ds-heading {font-size:14px;font-weight:700;color:#77737e;margin:25px 0 12px}
+    .ds-list {display:grid;gap:10px}
+    .ds-link {display:flex;align-items:center;gap:14px;padding:16px;background:white;border-radius:16px;text-decoration:none;color:#292832;box-shadow:0 4px 15px #21133308}
+    .ds-icon {width:44px;height:44px;border-radius:13px;background:#f1eaf8;display:grid;place-items:center;font-size:22px;flex-shrink:0}
+    .ds-copy {flex:1;min-width:0}
+    .ds-copy strong {display:block;font-size:15px}
+    .ds-copy small {display:block;color:#77737e;font-size:12px;margin-top:4px}
+    .ds-arrow {font-size:23px;color:#641bb0}
+    .ds-note {font-size:11px;color:#77737e;text-align:center;line-height:1.5;margin-top:22px}
+    .ds-empty {padding:25px;text-align:center;color:#77737e;background:white;border-radius:15px}
+  `;
+  document.head.appendChild(style);
+
+  const overlay = document.createElement("section");
+  overlay.id = "demo-search-overlay";
+  overlay.setAttribute("aria-label", "Website search and shortcuts");
+  overlay.innerHTML = `
+    <div class="ds-top">
+      <div class="ds-title">Explore</div>
+      <button id="ds-close" aria-label="Close">×</button>
+    </div>
+    <div class="ds-search">
+      <span>⌕</span>
+      <input id="ds-input" type="search" placeholder="Search services and pages..." autocomplete="off">
+    </div>
+    <div class="ds-heading">POPULAR DESTINATIONS</div>
+    <div class="ds-list" id="ds-list"></div>
+    <div class="ds-note">
+      External links open the official NatWest website.
+      This is a fictional demonstration and is not connected to NatWest.
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const list = overlay.querySelector("#ds-list");
+  const input = overlay.querySelector("#ds-input");
+
+  function render(query = "") {
+    const matches = links.filter(item =>
+      (item[0] + " " + item[1]).toLowerCase().includes(query.toLowerCase())
+    );
+
+    list.innerHTML = matches.length ? matches.map(item => `
+      <a class="ds-link" href="${item[2]}" target="_blank" rel="noopener noreferrer">
+        <span class="ds-icon">${item[3]}</span>
+        <span class="ds-copy">
+          <strong>${item[0]}</strong>
+          <small>${item[1]}</small>
+        </span>
+        <span class="ds-arrow">›</span>
+      </a>
+    `).join("") : `<div class="ds-empty">No matching pages found.</div>`;
+  }
+
+  function openSearch() {
+    overlay.classList.add("open");
+    input.value = "";
+    render();
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function closeSearch() {
+    overlay.classList.remove("open");
+  }
+
+  document.addEventListener("click", function(event) {
+    const searchButton = event.target.closest('button[aria-label="Search"]');
+    if (!searchButton) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openSearch();
+  }, true);
+
+  input.addEventListener("input", () => render(input.value));
+  overlay.querySelector("#ds-close").addEventListener("click", closeSearch);
+
+  overlay.addEventListener("click", event => {
+    if (event.target === overlay) closeSearch();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeSearch();
+  });
+
+  render();
+})();
+</script>
+
 </html>
