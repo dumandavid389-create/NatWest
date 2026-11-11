@@ -60,9 +60,8 @@ main{padding:20px 17px 115px;max-width:850px;margin:auto}
 .secondary-balance{font-size:19px;font-weight:750;text-align:right}
 .available{font-size:11px;color:var(--muted);margin-top:4px;text-align:right}
 .add-account{background:white;border-radius:15px;padding:19px 17px;display:flex;align-items:center;gap:14px;margin:0 0 28px;box-shadow:0 5px 20px #21133308}
-.bank-stack{display:flex;align-items:center;min-width:85px}
-.bank-mini{width:48px;height:48px;border:2px solid #e8e5ee;border-radius:13px;background:#fff;display:grid;place-items:center;font-size:24px;margin-right:-13px}
-.bank-mini:last-child{background:var(--deep);color:#fff}
+.bank-stack{display:flex;align-items:center;width:220px;min-width:220px;height:132px;flex:0 0 220px;overflow:hidden}
+.bank-stack img{width:220px;height:auto;display:block;object-fit:contain}
 .add-text{font-size:16px}
 .add-sub{font-size:13px;color:var(--muted);margin-top:5px}
 .more{margin-left:auto;color:var(--purple);font-size:23px;letter-spacing:2px}
@@ -113,7 +112,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 .delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
 .add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
 @media(min-width:700px){main{padding-top:30px}.account-primary{min-height:190px}}
-@media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}.header{padding-left:14px;padding-right:14px}}
+@media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -181,7 +180,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
   </section>
 
   <button class="add-account" data-message="Adding accounts is not available in this demo." style="width:100%;border:0;text-align:left;color:inherit">
-    <span class="bank-stack"><span class="bank-mini">▰</span><span class="bank-mini">◉</span><span class="bank-mini">◆</span></span>
+    <span class="bank-stack"><img src="bank-logo-stack.png" alt="Halifax, Barclays and RBS logos"></span>
     <span><span class="add-text">Add another account</span><span class="add-sub" style="display:block">Bank accounts &amp; mortgages</span></span>
     <span class="more">•••</span>
   </button>
