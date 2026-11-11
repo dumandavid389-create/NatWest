@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f1f7">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Banking Dashboard Demo</title>
+<style>
+:root{--purple:#4a087f;--deep:#310b4b;--ink:#292832;--muted:#77737e;--bg:#f2f1f7;--white:#fff;--line:#e9e6ed;--shadow:0 12px 35px rgba(37,25,53,.10);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink)}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #9b65cf;outline-offset:3px}
+.intro{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;overflow:hidden;color:white;background:radial-gradient(ellipse at center,#692b88,#42145f 58%,#2d0c45);transition:opacity .7s ease,visibility .7s ease}
+.intro.hide{opacity:0;visibility:hidden;pointer-events:none}
+.intro-top{position:absolute;top:calc(env(safe-area-inset-top) + 18px);left:0;right:0;display:flex;align-items:center;flex-direction:column;gap:10px}
+.intro-face{width:72px;height:72px;border-radius:21px;display:grid;place-items:center;background:#09080d;box-shadow:0 8px 28px #16082166;animation:faceAppear .55s ease both}
+.intro-face svg{width:45px;height:45px}
+.face-outline,.face-check{fill:none;stroke:#72f29a;stroke-linecap:round;stroke-linejoin:round}
+.face-outline{stroke-width:2.5;stroke-dasharray:145;stroke-dashoffset:145;animation:drawFace 1.05s ease .35s forwards}
+.face-check{stroke-width:3.4;stroke-dasharray:40;stroke-dashoffset:40;animation:drawCheck .42s ease 1.65s forwards}
+.intro-caption{font-size:12px;color:#f3eaf7;opacity:0;animation:fadeIn .4s ease .55s forwards}
+.intro-spinner{position:absolute;top:calc(env(safe-area-inset-top) + 132px);left:50%;width:18px;height:18px;margin-left:-9px;border:2px solid #ffffff38;border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+.intro-brand{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;animation:brandIn .7s ease .15s both}
+.intro-logo{width:88px;height:88px;border-radius:23px;overflow:hidden;display:grid;place-items:center}
+.intro-logo img{width:100%;height:100%;object-fit:contain}
+.intro-brand strong{font-size:28px;font-weight:800}
+.intro-brand small{font-size:10px;letter-spacing:1.5px;color:#eadcf1}
+.intro-foot{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 25px);font-size:10px;letter-spacing:.5px;color:#e6d7ed;text-align:center;padding:0 20px}
+@keyframes faceAppear{from{opacity:0;transform:translateY(-12px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes drawFace{to{stroke-dashoffset:0}}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes brandIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.demo-banner{padding:11px 15px;text-align:center;color:white;background:var(--deep);font-size:12px;line-height:1.5}
+.demo-banner strong{color:#ffd28b}
+.header{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+.app-logo{width:58px;height:58px;border-radius:17px;overflow:hidden;display:grid;place-items:center}
+.app-logo img{width:100%;height:100%;object-fit:contain}
+.header-actions{display:flex;align-items:center;gap:24px;background:#ffffffd9;border-radius:40px;padding:12px 20px;box-shadow:0 5px 20px #2113330c}
+.header-actions button{border:0;background:none;color:var(--purple);font-size:27px;padding:0}
+.notification{position:relative}
+.notification:after{content:"19";position:absolute;top:-11px;left:-12px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#3479e8;color:white;font-size:13px}
+main{padding:20px 17px 115px;max-width:850px;margin:auto}
+.section-label{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px;color:#696570;font-size:15px}
+.plain-button{border:0;background:none;color:var(--purple);font-size:15px;padding:5px}
+.account-card{background:white;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+.account-primary{padding:16px 18px 13px;min-height:178px}
+.account-name{font-size:17px;font-weight:500}
+.account-number{font-size:12px;color:var(--muted);margin-top:5px}
+.account-menu{float:right;border:0;background:none;color:var(--purple);font-size:21px;letter-spacing:2px;padding:0}
+.account-visual{display:flex;align-items:flex-end;justify-content:space-between;margin-top:13px}
+.wallet-art{width:94px;height:78px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer}
+.primary-balance{font-size:22px;font-weight:750;padding-bottom:4px}
+.account-secondary{border-top:1px solid var(--line);padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.secondary-name{font-size:16px}
+.secondary-type{font-size:12px;color:var(--muted);margin-top:4px}
+.secondary-balance{font-size:19px;font-weight:750;text-align:right}
+.available{font-size:11px;color:var(--muted);margin-top:4px;text-align:right}
+.add-account{background:white;border-radius:15px;padding:19px 17px;display:flex;align-items:center;gap:14px;margin:0 0 28px;box-shadow:0 5px 20px #21133308}
+.bank-stack{display:flex;align-items:center;width:150px;min-width:150px;height:90px;flex:0 0 150px;overflow:hidden}
+.bank-stack img{width:150px;height:auto;max-height:90px;display:block;object-fit:contain}
+.add-text{font-size:16px}
+.add-sub{font-size:13px;color:var(--muted);margin-top:5px}
+.more{margin-left:auto;color:var(--purple);font-size:23px;letter-spacing:2px}
+.pots-heading{margin:0 0 14px;color:#696570;font-size:15px}
+.new-tag{display:inline-block;margin-left:9px;padding:3px 9px;border-radius:15px;background:#3479e8;color:white;font-size:12px}
+.create-pot{width:100%;text-align:left;padding:22px 19px;border:2px dashed var(--purple);border-radius:14px;background:transparent;color:var(--purple);display:flex;align-items:center;gap:17px;margin-bottom:28px}
+.plus{font-size:31px;font-weight:300}
+.create-title{font-size:18px}
+.create-sub{font-size:13px;color:var(--muted);margin-top:6px}
+.widgets-heading{margin:0 0 14px}
+.widget-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.widget{min-height:190px;background:white;border-radius:23px;padding:20px 12px;text-align:center;box-shadow:var(--shadow)}
+.widget-title{font-size:14px;color:#706b76}
+.widget-icon{font-size:52px;color:#783bd1;margin:18px 0 9px}
+.widget-value{font-size:22px;font-weight:750}
+.widget-caption{font-size:12px;color:var(--muted);margin-top:5px}
+.transactions{margin-top:26px;background:white;border-radius:22px;padding:21px;box-shadow:var(--shadow)}
+.transactions h2{font-size:19px;margin:0 0 18px}
+.transaction{display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--line)}
+.merchant-icon{width:43px;height:43px;border-radius:50%;background:#f2eff5;display:grid;place-items:center;font-size:21px}
+.merchant{min-width:0}
+.merchant strong{font-size:14px}
+.merchant small{display:block;color:var(--muted);margin-top:5px;font-size:12px}
+.amount{margin-left:auto;font-weight:750;white-space:nowrap}
+.bottom-nav{position:fixed;z-index:20;left:13px;right:13px;bottom:calc(env(safe-area-inset-bottom) + 12px);max-width:820px;margin:auto;padding:8px 7px;display:grid;grid-template-columns:repeat(5,1fr);background:#ffffffed;border:1px solid white;border-radius:50px;box-shadow:0 7px 30px #1d14252b;backdrop-filter:blur(15px)}
+.nav-item{border:0;background:transparent;border-radius:40px;color:#45414a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 2px;font-size:11px;font-weight:650}
+.nav-icon{font-size:27px;line-height:1.1}
+.nav-icon svg{width:25px;height:25px;display:block}
+.nav-item.active{background:#f0eaf7;color:var(--purple)}
+.nav-item.active .nav-icon{font-size:29px}
+footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--muted);line-height:1.5}
+.toast{position:fixed;z-index:1200;bottom:105px;left:50%;transform:translateX(-50%);background:#30203b;color:white;padding:12px 18px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;width:max-content;max-width:90%}
+.toast.show{opacity:1}
+.editor-backdrop{position:fixed;inset:0;z-index:1100;background:#170d20a8;display:none;align-items:center;justify-content:center;padding:16px}
+.editor-backdrop.open{display:flex}
+.editor{width:min(100%,460px);max-height:90%;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0004}
+.editor h2{font-size:21px;margin:0 0 6px;color:var(--deep)}
+.editor-intro{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 17px}
+.editor h3{font-size:15px;margin:18px 0 10px}
+.editor label{display:block;font-size:12px;color:#5f5966;margin:10px 0 5px}
+.editor input{width:100%;height:43px;border:1px solid #dcd6e3;border-radius:9px;padding:0 11px;font:16px inherit;color:var(--ink);background:white}
+.editor-actions{display:flex;gap:10px;margin-top:20px}
+.editor-actions button{flex:1;border-radius:10px;padding:12px;border:1px solid #d9d2e0;background:white;color:var(--purple);font-weight:650}
+.editor-actions .save{background:var(--purple);border-color:var(--purple);color:white}
+.editor-account{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+.editor-account-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.editor-account-heading h3{margin:0}
+.delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
+.add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
+@media(min-width:700px){main{padding-top:30px}.account-primary{min-height:190px}}
+@media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<section class="intro" id="intro">
+  <div class="intro-top">
+    <div class="intro-face">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path class="face-outline" d="M15 7H9v8M33 7h6v8M9 33v8h6M39 33v8h-6M17 19c1.5-2 4-3 7-3s5.5 1 7 3M17 27c1.5 3 4 5 7 5s5.5-2 7-5"/>
+        <path class="face-check" d="M15 25l6 6 13-14"/>
+      </svg>
+    </div>
+    <div class="intro-caption">Verifying device · visual demo only</div>
+  </div>
+  <div class="intro-spinner"></div>
+  <div class="intro-brand">
+    <div class="intro-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+    <strong>NatWest</strong>
+    <small>FICTIONAL PROTOTYPE</small>
+  </div>
+  <div class="intro-foot">No camera access · No real identity or bank verification</div>
+</section>
+
+<div class="demo-banner"><strong>Prototype only</strong> · Fictional sample account information — not connected to NatWest or any real bank.</div>
+
+<header class="header">
+  <div class="app-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+  <div class="header-actions">
+    <button class="notification" data-message="Sample notifications only." aria-label="Notifications">♧</button>
+    <button data-message="Search is not connected in this demo." aria-label="Search">⌕</button>
+  </div>
+</header>
+
+<main>
+  <div class="section-label"><span id="dashboard-greeting">Good morning, Jamie</span></div>
+
+  <section class="account-card">
+    <div class="account-primary">
+      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+      <div class="account-name" id="account-name-1">DEMO ACCOUNT</div>
+      <div class="account-number" id="account-details-1">Select Account · Sample number · 00-00-00</div>
+      <div class="account-visual">
+        <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+          <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+          <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+          <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+          <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+          <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+          <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="primary-balance" id="account-balance-1">£0.53</div>
+      </div>
+    </div>
+    <div class="account-secondary">
+      <div>
+        <div class="secondary-name" id="account-name-2">Sample Current Account</div>
+        <div class="secondary-type" id="account-details-2">Fictional sample account</div>
+      </div>
+      <div>
+        <div class="secondary-balance" id="account-balance-2">£58.44</div>
+        <div class="available">Sample available balance</div>
+      </div>
+    </div>
+  </section>
+
+  <button class="add-account" data-message="Adding accounts is not available in this demo." style="width:100%;border:0;text-align:left;color:inherit">
+    <span class="bank-stack"><img src="bank-logo-stack.png" alt="Halifax, Barclays and RBS logos"></span>
+    <span><span class="add-text">Add another account</span><span class="add-sub" style="display:block">Bank accounts &amp; mortgages</span></span>
+    <span class="more">•••</span>
+  </button>
+
+  <div class="pots-heading">Pots <span class="new-tag">New</span></div>
+  <button class="create-pot" data-message="Creating pots is disabled in this demo.">
+    <span class="plus">＋</span>
+    <span><span class="create-title">Create a pot</span><span class="create-sub" style="display:block">Separate money from your main account</span></span>
+  </button>
+
+  <div class="section-label widgets-heading">
+    <span>Widgets</span>
+    <button class="plain-button" data-message="Widget editing is disabled in this demo.">Edit　›</button>
+  </div>
+
+  <section class="widget-grid">
+    <article class="widget">
+      <div class="widget-title">Credit score</div><div class="widget-icon">◉</div>
+      <div class="widget-value">—</div><div class="widget-caption">Sample widget</div>
+    </article>
+    <article class="widget">
+      <div class="widget-title">Weekly spend</div><div class="widget-icon">▥</div>
+      <div class="widget-value">£19.42</div><div class="widget-caption">Fictional sample data</div>
+    </article>
+  </section>
+
+  <section class="transactions">
+    <h2>Recent transactions</h2>
+    <article class="transaction">
+      <div class="merchant-icon">☕</div>
+      <div class="merchant"><strong>COFFEE HOUSE</strong><small>Today · 09:14 · Sample card</small></div>
+      <div class="amount">−£4.60</div>
+    </article>
+    <article class="transaction">
+      <div class="merchant-icon">🛒</div>
+      <div class="merchant"><strong>GROCERY MARKET</strong><small>Yesterday · Sample card</small></div>
+      <div class="amount">−£18.25</div>
+    </article>
+  </section>
+</main>
+
+<nav class="bottom-nav" aria-label="Demo navigation">
+  <button class="nav-item active" data-message="You are viewing the demo home screen.">
+    <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span>Home
+  </button>
+  <button class="nav-item" data-message="Help is not connected in this demo.">
+    <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.2 1.1-1.9 1.4-1.9 3"/><path d="M12 17.5h.01"/></svg></span>Help
+  </button>
+  <button class="nav-item" data-message="Payments are disabled in this demo."><span class="nav-icon">⇄</span>Payments</button>
+  <button class="nav-item" data-message="Insights use fictional sample data."><span class="nav-icon">▥</span>Insights</button>
+  <button class="nav-item" data-message="Applications are disabled in this demo."><span class="nav-icon">▤</span>Apply</button>
+</nav>
+
+<footer>Fictional visual prototype only. Not an official NatWest service. No real accounts, authentication, payments or banking services are connected.</footer>
+<div class="toast" role="status" aria-live="polite"></div>
+
+<div class="editor-backdrop" id="account-editor">
+  <section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <h2 id="editor-title">Edit sample accounts</h2>
+    <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
+    <h3>Dashboard greeting</h3>
+    <label for="edit-dashboard-name">Name shown after ‘Good morning’</label>
+    <input id="edit-dashboard-name" maxlength="40" value="Jamie">
+    <div id="editor-accounts"></div>
+    <button type="button" class="add-demo-account" id="add-demo-account">＋ Add demo account</button>
+    <div class="editor-actions">
+      <button type="button" id="cancel-edit">Cancel</button>
+      <button type="button" class="save" id="save-edit">Save changes</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const intro=document.getElementById("intro");
+window.setTimeout(()=>intro.classList.add("hide"),3400);
+window.setTimeout(()=>intro.remove(),4200);
+
+const toast=document.querySelector(".toast");
+let toastTimer;
+
+function showToast(message){
+  toast.textContent=message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=window.setTimeout(()=>toast.classList.remove("show"),2600);
+}
+
+document.querySelectorAll("[data-message]").forEach(button=>{
+  button.addEventListener("click",()=>showToast(button.dataset.message));
+});
+
+document.querySelectorAll(".nav-item").forEach(item=>{
+  item.addEventListener("click",()=>{
+    document.querySelectorAll(".nav-item").forEach(nav=>nav.classList.remove("active"));
+    item.classList.add("active");
+  });
+});
+
+let dashboardName="Jamie";
+const accounts=[
+  {name:"DEMO ACCOUNT",sort:"00-00-00",number:"00000000",balance:"0.53"},
+  {name:"Sample Current Account",sort:"00-00-00",number:"00000000",balance:"58.44"}
+];
+
+const editor=document.getElementById("account-editor");
+const editorAccounts=document.getElementById("editor-accounts");
+let holdTimer=null;
+let editorOpened=false;
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+function formatSortCode(value){
+  const digits=String(value).replace(/\D/g,"").slice(0,6);
+  return digits.replace(/(\d{2})(?=\d)/g,"$1-");
+}
+
+function parseBalance(value){
+  const cleaned=String(value).trim().replace(/[£\s]/g,"");
+  if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(cleaned))return null;
+  const amount=Number(cleaned.replace(/,/g,""));
+  return Number.isFinite(amount)?amount.toFixed(2):null;
+}
+
+function formatBalance(value){
+  return "£"+Number(value).toLocaleString("en-GB",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function renderAccounts(){
+  const card=document.querySelector(".account-card");
+  const first=accounts[0];
+  const walletMarkup=`
+    <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+      <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+      <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+      <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+      <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+      <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+      <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+    </svg>`;
+  card.innerHTML=`
+    <div class="account-primary">
+      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+      <div class="account-name">${escapeHTML(first.name)}</div>
+      <div class="account-number">Select Account · ${escapeHTML(formatSortCode(first.sort))} · ${escapeHTML(first.number)}</div>
+      <div class="account-visual">
+        ${walletMarkup}
+        <div class="primary-balance">${formatBalance(first.balance)}</div>
+      </div>
+    </div>
+    ${accounts.slice(1).map(account=>`
+      <div class="account-secondary">
+        <div>
+          <div class="secondary-name">${escapeHTML(account.name)}</div>
+          <div class="secondary-type">${escapeHTML(formatSortCode(account.sort))} · ${escapeHTML(account.number)}</div>
+        </div>
+        <div>
+          <div class="secondary-balance">${formatBalance(account.balance)}</div>
+          <div class="available">Sample available balance</div>
+        </div>
+      </div>`).join("")}`;
+  card.querySelector(".account-menu").addEventListener("click",()=>showToast("Sample account options only."));
+  attachWalletHold();
+}
+
+function renderEditorAccounts(){
+  editorAccounts.innerHTML=accounts.map((account,index)=>`
+    <div class="editor-account" data-index="${index}">
+      <div class="editor-account-heading">
+        <h3>Demo account ${index+1}</h3>
+        <button type="button" class="delete-account" data-delete-account="${index}">Delete</button>
+      </div>
+      <label for="edit-name-${index}">Account name</label>
+      <input id="edit-name-${index}" data-field="name" maxlength="40" value="${escapeHTML(account.name)}">
+      <label for="edit-sort-${index}">Sort code</label>
+      <input id="edit-sort-${index}" data-field="sort" inputmode="numeric" maxlength="8" placeholder="00-00-00" value="${escapeHTML(formatSortCode(account.sort))}">
+      <label for="edit-number-${index}">Account number</label>
+      <input id="edit-number-${index}" data-field="number" inputmode="numeric" maxlength="8" value="${escapeHTML(account.number)}">
+      <label for="edit-balance-${index}">Displayed balance (£)</label>
+      <input id="edit-balance-${index}" data-field="balance" inputmode="decimal" placeholder="125,000.00" value="${escapeHTML(account.balance)}">
+    </div>`).join("");
+}
+
+function fillEditor(){
+  document.getElementById("edit-dashboard-name").value=dashboardName;
+  renderEditorAccounts();
+}
+
+function openAccountEditor(){
+  if(editorOpened)return;
+  editorOpened=true;
+  fillEditor();
+  editor.classList.add("open");
+}
+
+function startWalletHold(event){
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+  event.preventDefault();
+  clearTimeout(holdTimer);
+  editorOpened=false;
+  try{event.currentTarget.setPointerCapture(event.pointerId);}catch(error){}
+  holdTimer=window.setTimeout(()=>{
+    holdTimer=null;
+    openAccountEditor();
+  },3500);
+}
+
+function endWalletHold(){
+  if(holdTimer!==null){
+    clearTimeout(holdTimer);
+    holdTimer=null;
+  }
+}
+
+function attachWalletHold(){
+  const wallet=document.querySelector(".wallet-art");
+  if(!wallet)return;
+  wallet.addEventListener("pointerdown",startWalletHold);
+  wallet.addEventListener("pointerup",endWalletHold);
+  wallet.addEventListener("pointercancel",endWalletHold);
+  wallet.addEventListener("lostpointercapture",endWalletHold);
+  wallet.addEventListener("contextmenu",event=>event.preventDefault());
+}
+
+document.getElementById("add-demo-account").addEventListener("click",()=>{
+  accounts.push({name:"New demo account",sort:"00-00-00",number:"00000000",balance:"0.00"});
+  renderEditorAccounts();
+});
+
+editorAccounts.addEventListener("click",event=>{
+  const button=event.target.closest("[data-delete-account]");
+  if(!button)return;
+  if(accounts.length===1){
+    showToast("Keep at least one demo account.");
+    return;
+  }
+  accounts.splice(Number(button.dataset.deleteAccount),1);
+  renderEditorAccounts();
+});
+
+editorAccounts.addEventListener("input",event=>{
+  const field=event.target.dataset.field;
+  if(field==="sort"){
+    event.target.value=formatSortCode(event.target.value);
+  }else if(field==="number"){
+    event.target.value=event.target.value.replace(/\D/g,"").slice(0,8);
+  }
+});
+
+document.getElementById("save-edit").addEventListener("click",()=>{
+  const updated=[];
+  const rows=[...editorAccounts.querySelectorAll(".editor-account")];
+
+  for(let index=0;index<rows.length;index++){
+    const row=rows[index];
+    const value=field=>row.querySelector(`[data-field="${field}"]`).value.trim();
+    const name=value("name");
+    const sortDigits=value("sort").replace(/\D/g,"");
+    const number=value("number").replace(/\D/g,"");
+    const balance=parseBalance(value("balance"));
+
+    if(!name){
+      showToast(`Enter a name for demo account ${index+1}.`);
+      row.querySelector('[data-field="name"]').focus();
+      return;
+    }
+    if(sortDigits.length!==6){
+      showToast(`Enter a 6-digit sort code for demo account ${index+1}.`);
+      row.querySelector('[data-field="sort"]').focus();
+      return;
+    }
+    if(number.length!==8){
+      showToast(`Enter an 8-digit account number for demo account ${index+1}.`);
+      row.querySelector('[data-field="number"]').focus();
+      return;
+    }
+    if(balance===null){
+      showToast(`Enter a valid balance for demo account ${index+1}, e.g. 125,000.00.`);
+      row.querySelector('[data-field="balance"]').focus();
+      return;
+    }
+
+    updated.push({
+      name,
+      sort:formatSortCode(sortDigits),
+      number,
+      balance
+    });
+  }
+
+  dashboardName=document.getElementById("edit-dashboard-name").value.trim()||"Jamie";
+  accounts.splice(0,accounts.length,...updated);
+  document.getElementById("dashboard-greeting").textContent=`Good morning, ${dashboardName}`;
+  renderAccounts();
+  editor.classList.remove("open");
+  showToast("Sample account details updated.");
+});
+
+document.getElementById("cancel-edit").addEventListener("click",()=>{
+  editor.classList.remove("open");
+});
+
+editor.addEventListener("click",event=>{
+  if(event.target===editor)editor.classList.remove("open");
+});
+
+renderAccounts();
+</script>
+</body>
+</html>
