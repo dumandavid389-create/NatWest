@@ -1761,6 +1761,44 @@ document.addEventListener('touchend', function(e) {
 })();
 </script>
 
+<script>
+(function() {
+  const icons = {
+    payments: `<svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10h24l-6-6"/>
+      <path d="M27 10l-6 6"/>
+      <path d="M29 22H5l6-6"/>
+      <path d="M5 22l6 6"/>
+    </svg>`,
+
+    statements: `<svg viewBox="0 0 32 36" width="32" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M6 2h13l8 8v23H6z"/>
+      <path d="M19 2v9h8"/>
+      <text x="16" y="24" text-anchor="middle" fill="currentColor" stroke="none" font-size="7" font-weight="bold">PDF</text>
+    </svg>`,
+
+    cards: `<svg viewBox="0 0 34 30" width="34" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+      <rect x="2" y="4" width="30" height="22" rx="3"/>
+      <path d="M2 11h30"/>
+      <path d="M7 19h9"/>
+    </svg>`
+  };
+
+  document.querySelectorAll('#account-feature-menu [data-feature]').forEach(button => {
+    const icon = button.querySelector('.menu-icon');
+    const key = button.dataset.feature;
+
+    if (icon && icons[key]) {
+      icon.innerHTML = icons[key];
+      icon.style.display = 'flex';
+      icon.style.alignItems = 'center';
+      icon.style.justifyContent = 'center';
+      icon.style.color = '#39005f';
+    }
+  });
+})();
+</script>
+
 </body>
 
 </html>
