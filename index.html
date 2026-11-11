@@ -1799,6 +1799,107 @@ document.addEventListener('touchend', function(e) {
 })();
 </script>
 
+<script>
+(function () {
+  const STORAGE_KEY = "fictionalDashboardSavedAccounts";
+
+  function readEditorData() {
+    const rows = [...document.querySelectorAll(".editor-account")];
+
+    return {
+      name: document.getElementById("edit-dashboard-name").value,
+      accounts: rows.map(row => ({
+        name: row.querySelector('[data-field="name"]').value,
+        sort: row.querySelector('[data-field="sort"]').value,
+        number: row.querySelector('[data-field="number"]').value,
+        balance: row.querySelector('[data-field="balance"]').value
+      }))
+    };
+  }
+
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(readEditorData()));
+    } catch (error) {
+      console.warn("Could not save demo account data.", error);
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("#save-edit")) {
+      setTimeout(saveData, 100);
+    }
+  });
+
+  function restoreData() {
+    let saved;
+
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    } catch (error) {
+      return;
+    }
+
+    if (!saved || !Array.isArray(saved.accounts) || !saved.accounts.length) return;
+
+    const wallet = document.querySelector(".wallet-art");
+    if (!wallet) return;
+
+    wallet.dispatchEvent(new PointerEvent("pointerdown", {
+      bubbles: true,
+      pointerType: "touch",
+      pointerId: 1
+    }));
+
+    setTimeout(function () {
+      wallet.dispatchEvent(new PointerEvent("pointerup", {
+        bubbles: true,
+        pointerType: "touch",
+        pointerId: 1
+      }));
+
+      setTimeout(function () {
+        const editor = document.getElementById("account-editor");
+        if (!editor.classList.contains("open")) return;
+
+        const addButton = document.getElementById("add-demo-account");
+
+        let rows = [...document.querySelectorAll(".editor-account")];
+
+        while (rows.length < saved.accounts.length) {
+          addButton.click();
+          rows = [...document.querySelectorAll(".editor-account")];
+        }
+
+        while (rows.length > saved.accounts.length) {
+          rows[rows.length - 1].querySelector("[data-delete-account]").click();
+          rows = [...document.querySelectorAll(".editor-account")];
+        }
+
+        document.getElementById("edit-dashboard-name").value =
+          saved.name || "Jamie";
+
+        saved.accounts.forEach(function (account, index) {
+          const row = rows[index];
+
+          Object.keys(account).forEach(function (field) {
+            const input = row.querySelector('[data-field="' + field + '"]');
+            if (input) input.value = account[field];
+          });
+        });
+
+        document.getElementById("save-edit").click();
+
+      }, 200);
+    }, 3600);
+  }
+
+  window.addEventListener("load", function () {
+    setTimeout(restoreData, 4500);
+  });
+})();
+</script>
+
 </body>
 
 </html>
