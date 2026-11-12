@@ -2519,5 +2519,30 @@ button[aria-label*="search"] {
 }
 </style>
 
+<script>
+/* Make the close buttons work on Insights and Credit Score */
+document.addEventListener("click", function(e) {
+    const closeButton = e.target.closest(
+        'button[aria-label*="Close"], button[aria-label*="close"], .close-btn, .close-button, .back-button, [data-action="close"]'
+    );
+
+    if (!closeButton) return;
+
+    const screen = closeButton.closest(
+        '.insights-screen, .credit-score-screen, .insights-page, .credit-score-page, [data-page]'
+    );
+
+    if (screen) {
+        screen.style.display = "none";
+        return;
+    }
+
+    // Fallback: use browser history if available
+    if (history.length > 1) {
+        history.back();
+    }
+});
+</script>
+
 </body>
 </html>
