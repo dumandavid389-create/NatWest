@@ -2792,5 +2792,410 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<style>
+/* PROFILE EXPERIENCE */
+#profileExperience {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #f3f1f8;
+  color: #292832;
+  font-family: inherit;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(22px) scale(.985);
+  transition: opacity .35s ease, transform .4s ease, visibility .4s;
+  padding: 28px 20px 120px;
+  box-sizing: border-box;
+}
+
+#profileExperience.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 38px;
+}
+
+.profile-back, .profile-logout {
+  border: 0;
+  background: white;
+  border-radius: 50px;
+  padding: 17px 20px;
+  font-size: 17px;
+  color: #401078;
+  cursor: pointer;
+  box-shadow: 0 5px 20px #30204b0b;
+}
+
+.profile-heading {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.profile-avatar {
+  width: 125px;
+  height: 125px;
+  border-radius: 30px;
+  background: linear-gradient(145deg,#35004e,#21002f);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 25px;
+  color: #ed4225;
+  font-size: 48px;
+  box-shadow: 0 15px 35px #31004b20;
+  animation: profilePop .6s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes profilePop {
+  from { opacity:0; transform:scale(.65) rotate(-8deg); }
+  to { opacity:1; transform:scale(1) rotate(0); }
+}
+
+.profile-name {
+  text-align: center;
+  font-size: 29px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.profile-customer {
+  text-align: center;
+  color: #77737e;
+  font-size: 16px;
+  margin-bottom: 42px;
+}
+
+.profile-section-title {
+  color: #77737e;
+  font-size: 17px;
+  margin: 32px 0 14px;
+}
+
+.profile-list {
+  background: white;
+  border-radius: 19px;
+  padding: 0 20px;
+  box-shadow: 0 8px 28px #30204b08;
+}
+
+.profile-option {
+  width: 100%;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #e6e3e9;
+  color: #303039;
+  text-align: left;
+  font: inherit;
+  font-size: 17px;
+  cursor: pointer;
+  padding: 12px 0;
+  transition: .2s;
+}
+
+.profile-option:last-child { border-bottom: 0; }
+.profile-option:active { transform: scale(.98); background:#faf8fd; }
+
+.profile-option .profile-icon {
+  width: 38px;
+  color: #6419b2;
+  font-size: 25px;
+  text-align: center;
+}
+
+.profile-option .profile-arrow {
+  margin-left: auto;
+  color: #6419b2;
+  font-size: 25px;
+}
+
+.profile-detail {
+  display: none;
+  animation: profileSlide .3s ease both;
+}
+
+.profile-detail.visible { display:block; }
+
+@keyframes profileSlide {
+  from { opacity:0; transform:translateX(18px); }
+  to { opacity:1; transform:translateX(0); }
+}
+
+.profile-detail-card {
+  background: white;
+  padding: 25px;
+  border-radius: 22px;
+  margin-top: 25px;
+  line-height: 1.6;
+}
+
+.profile-detail-card h2 { margin-top:0; }
+.profile-detail-card button {
+  background:#481078;
+  color:white;
+  border:0;
+  border-radius:30px;
+  padding:14px 22px;
+  font-size:16px;
+  margin-top:15px;
+}
+
+.profile-logo-pulse {
+  animation: logoPulse .55s ease;
+}
+@keyframes logoPulse {
+  50% { transform:scale(.82) rotate(-7deg); }
+}
+</style>
+
+<div id="profileExperience">
+  <div id="profileMain">
+    <div class="profile-header">
+      <button class="profile-back" id="profileClose">←</button>
+      <div class="profile-heading">My Profile</div>
+      <button class="profile-logout" id="profileLogout">Log out</button>
+    </div>
+
+    <div class="profile-avatar">◆</div>
+    <div class="profile-name">JAMIE</div>
+    <div class="profile-customer">Customer number: DEMO 000000</div>
+
+    <div class="profile-section-title">Personal</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Personal details">
+        <span class="profile-icon">♙</span>Personal details<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Credit score">
+        <span class="profile-icon">◉</span>Credit score<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="My security profile">
+        <span class="profile-icon">♢</span>My security profile<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Managing connections">
+        <span class="profile-icon">◎</span>Managing connections<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Device information">
+        <span class="profile-icon">▣</span>Device information<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Loyalty cards">
+        <span class="profile-icon">▤</span>Loyalty cards<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">Payments</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Pay Your Contacts">
+        <span class="profile-icon">♧</span>Pay Your Contacts<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Apple Pay">
+        <span class="profile-icon">▣</span>Apple Pay<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">Accessibility</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Banking My Way">
+        <span class="profile-icon">♙</span>Banking My Way<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">How we contact you</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Notification preferences">
+        <span class="profile-icon">♧</span>Notification preferences<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Marketing preferences">
+        <span class="profile-icon">✉</span>Marketing preferences<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Paperless settings">
+        <span class="profile-icon">♧</span>Paperless settings<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">Privacy and security</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Change passcode">
+        <span class="profile-icon">♙</span>Change passcode<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Face ID login">
+        <span class="profile-icon">◉</span>Face ID login<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Biometric approval">
+        <span class="profile-icon">◎</span>Biometric approval<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Privacy preferences">
+        <span class="profile-icon">◉</span>Privacy preferences<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Auto logout">
+        <span class="profile-icon">◷</span>Auto logout<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">App customisation</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="App theme">
+        <span class="profile-icon">◐</span>App theme<span class="profile-arrow">›</span>
+      </button>
+      <button class="profile-option" data-profile="Edit accounts">
+        <span class="profile-icon">▤</span>Edit accounts<span class="profile-arrow">›</span>
+      </button>
+    </div>
+
+    <div class="profile-section-title">Business</div>
+    <div class="profile-list">
+      <button class="profile-option" data-profile="Link a business">
+        <span class="profile-icon">▣</span>Link a business<span class="profile-arrow">›</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="profile-detail" id="profileDetail">
+    <div class="profile-header">
+      <button class="profile-back" id="profileDetailBack">←</button>
+      <div class="profile-heading" id="profileDetailTitle">Settings</div>
+      <span></span>
+    </div>
+    <div class="profile-detail-card">
+      <h2 id="profileDetailHeading">Settings</h2>
+      <p id="profileDetailText"></p>
+      <div id="profileDetailActions"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const screen = document.getElementById("profileExperience");
+  const main = document.getElementById("profileMain");
+  const detail = document.getElementById("profileDetail");
+
+  if (!screen || screen.dataset.ready) return;
+  screen.dataset.ready = "true";
+
+  function openProfile() {
+    screen.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeProfile() {
+    screen.classList.remove("active");
+    main.style.display = "block";
+    detail.classList.remove("visible");
+    document.body.style.overflow = "";
+  }
+
+  // Find the logo in the top-left area of the dashboard.
+  function isLogoClick(target) {
+    const logo = target.closest(
+      '[data-logo], #logo, .logo, .brand, .app-logo, .header-logo, img[alt*="logo" i]'
+    );
+    if (logo) return true;
+
+    const images = [...document.querySelectorAll("header img, nav img, img")];
+    return images.some(img => {
+      const r = img.getBoundingClientRect();
+      return img === target &&
+        r.width > 25 && r.height > 25 &&
+        r.top >= 0 && r.top < 180 && r.left < 180;
+    });
+  }
+
+  document.addEventListener("click", function(e) {
+    if (screen.classList.contains("active")) return;
+    if (!isLogoClick(e.target)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const logo = e.target.closest("img, button, a, [data-logo], .logo, .brand");
+    if (logo) {
+      logo.classList.add("profile-logo-pulse");
+      setTimeout(() => logo.classList.remove("profile-logo-pulse"), 600);
+    }
+    setTimeout(openProfile, 180);
+  }, true);
+
+  document.getElementById("profileClose").addEventListener("click", closeProfile);
+  document.getElementById("profileLogout").addEventListener("click", () => {
+    showDetail("Log out", "This is a fictional prototype. No real banking session is connected.", "");
+  });
+
+  document.getElementById("profileDetailBack").addEventListener("click", () => {
+    detail.classList.remove("visible");
+    main.style.display = "block";
+  });
+
+  function showDetail(name, message, link) {
+    main.style.display = "none";
+    detail.classList.add("visible");
+    document.getElementById("profileDetailTitle").textContent = name;
+    document.getElementById("profileDetailHeading").textContent = name;
+    document.getElementById("profileDetailText").textContent = message;
+
+    const actions = document.getElementById("profileDetailActions");
+    actions.innerHTML = "";
+
+    if (link) {
+      const button = document.createElement("button");
+      button.textContent = "Visit NatWest website ↗";
+      button.addEventListener("click", () => window.open(link, "_blank", "noopener"));
+      actions.appendChild(button);
+    }
+  }
+
+  const descriptions = {
+    "Personal details": "View and manage your fictional profile information. No real personal details are stored here.",
+    "Credit score": "Your demo credit profile. This prototype is not connected to a credit reference agency.",
+    "My security profile": "Explore example security settings for this demo application.",
+    "Managing connections": "Manage example connected services and account links.",
+    "Device information": "This is where your registered demo devices would appear.",
+    "Loyalty cards": "Your saved loyalty cards would appear here.",
+    "Pay Your Contacts": "This demo option represents contact payment services. No money can be sent.",
+    "Apple Pay": "Explore the Apple Pay information page.",
+    "Banking My Way": "Explore accessibility and personal banking preferences.",
+    "Notification preferences": "Choose how you would like this demo app to display notifications.",
+    "Marketing preferences": "Manage example marketing and communication preferences.",
+    "Paperless settings": "Manage example paperless statement preferences.",
+    "Change passcode": "Passcode changes are disabled in this visual prototype.",
+    "Face ID login": "Biometric login is not connected in this prototype.",
+    "Biometric approval": "Biometric approvals are not available in this demo.",
+    "Privacy preferences": "Review the privacy settings for this fictional application.",
+    "Auto logout": "Choose a demo automatic logout preference.",
+    "App theme": "Your current demo theme is Light mode.",
+    "Edit accounts": "Return to the dashboard account editor to manage your sample accounts.",
+    "Link a business": "Business account linking is not connected in this prototype."
+  };
+
+  const links = {
+    "Apple Pay": "https://www.natwest.com/",
+    "Banking My Way": "https://www.natwest.com/",
+    "Pay Your Contacts": "https://www.natwest.com/",
+    "Credit score": "https://www.natwest.com/"
+  };
+
+  screen.addEventListener("click", function(e) {
+    const option = e.target.closest("[data-profile]");
+    if (!option) return;
+
+    const name = option.dataset.profile;
+    showDetail(
+      name,
+      descriptions[name] || "This is an example settings page in your fictional banking prototype.",
+      links[name] || ""
+    );
+  });
+})();
+</script>
+
 </body>
 </html>
