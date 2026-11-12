@@ -4234,5 +4234,14 @@ button:active{transform:scale(.97)}
 })();
 </script>
 
+<script>
+document.addEventListener('input', function(e) {
+  if (e.target && e.target.id === 'payee-sort') {
+    let digits = e.target.value.replace(/\D/g, '').slice(0, 6);
+    e.target.value = digits.replace(/(\d{2})(?=\d)/g, '$1-');
+  }
+});
+</script>
+
 </body>
 </html>
