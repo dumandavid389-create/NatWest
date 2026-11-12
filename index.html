@@ -3462,7 +3462,7 @@ button:active{transform:scale(.97)}
     openPage('payee-checking',`${header('Pay someone new')}<div class="pay-checking"><div class="pay-spinner"></div><h2>Checking</h2><p>Running a visual demo check…</p><small>No bank or payee database is contacted.</small></div>`);
     setTimeout(()=>{
       const r=window.demoPayeeResult;if(!r||currentPage!=='payee-checking')return;
-      openPage('payee-match',`${header('Pay someone new')}<div class="pay-match"><div class="pay-match-icon">♙</div><h1>It's a match</h1><p>Sample details accepted by this demo</p><div class="pay-match-details"><strong>${escapeHTML(r.first)} ${escapeHTML(r.last)}</strong><small>${escapeHTML(r.type)} · SIMULATED RESULT</small></div><div class="premium-notice">This is a simulated success screen. The name and account details have not been checked against a real bank.</div><button class="premium-primary" data-action="open-matched-payment">Done</button><button class="premium-secondary" data-page="payees">Try another sample</button></div>`);
+      openPage('payee-match',`${header('Pay someone new')}<div class="pay-match"><div class="pay-match-icon">♙</div><h1>It's a match</h1><p>Details accepted</p><div class="pay-match-details"><strong>${escapeHTML(r.first)} ${escapeHTML(r.last)}</strong><small>${escapeHTML(r.type)} · RESULT</small></div><div class="premium-notice">Success screen.</div><button class="premium-primary" data-action="open-matched-payment">Done</button><button class="premium-secondary" data-page="payees">Try another sample</button></div>`);
     },1500);
   }
 
