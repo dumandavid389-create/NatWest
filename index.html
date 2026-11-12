@@ -3759,5 +3759,63 @@ document.addEventListener("click", function (event) {
 }, true);
 </script>
 
+<style>
+/* ENLARGE TOP-RIGHT NOTIFICATION AND SEARCH CONTROLS */
+
+button[aria-label*="notification" i],
+button[aria-label*="search" i],
+button[title*="notification" i],
+button[title*="search" i],
+.notification-btn,
+.search-btn,
+.notification-button,
+.search-button {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+button[aria-label*="notification" i] svg,
+button[aria-label*="search" i] svg,
+button[title*="notification" i] svg,
+button[title*="search" i] svg,
+.notification-btn svg,
+.search-btn svg,
+.notification-button svg,
+.search-button svg {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+}
+
+/* Make the notification count bigger */
+.notification-btn span,
+.notification-button span,
+button[aria-label*="notification" i] .badge,
+.notification-badge {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    font-size: 25px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+}
+
+/* Give the top-right control area more room */
+.top-actions,
+.header-actions,
+.top-right-actions {
+    min-height: 90px !important;
+    gap: 18px !important;
+}
+
+</style>
+
 </body>
 </html>
