@@ -2497,5 +2497,27 @@ document.addEventListener('touchend', function(e) {
 })();
 </script>
 
+<style>
+/* Enlarge notification and search icons */
+button[aria-label*="Notification"] svg,
+button[aria-label*="notification"] svg,
+button[aria-label*="Search"] svg,
+button[aria-label*="search"] svg {
+    width: 34px !important;
+    height: 34px !important;
+    stroke-width: 2.4px !important;
+}
+
+/* Keep icons centred */
+button[aria-label*="Notification"],
+button[aria-label*="notification"],
+button[aria-label*="Search"],
+button[aria-label*="search"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+
 </body>
 </html>
