@@ -3731,5 +3731,33 @@ button:active{transform:scale(.97)}
 })();
 </script>
 
+<script>
+/* Reliable close buttons for Credit Score and Insights */
+document.addEventListener("click", function (event) {
+    const closeButton = event.target.closest(
+        ".demo-overlay [data-close]"
+    );
+
+    if (!closeButton) return;
+
+    const page = closeButton.closest(".demo-overlay");
+    if (!page) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    page.classList.remove("open");
+
+    // Only restore scrolling when no other demo page is open.
+    const anotherPageOpen = document.querySelector(
+        ".demo-overlay.open"
+    );
+
+    if (!anotherPageOpen) {
+        document.body.style.overflow = "";
+    }
+}, true);
+</script>
+
 </body>
 </html>
