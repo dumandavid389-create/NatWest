@@ -3817,5 +3817,212 @@ button[aria-label*="notification" i] .badge,
 
 </style>
 
+<style>
+#transaction-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #f2f1f7;
+  padding: 65px 22px 35px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform .4s cubic-bezier(.22,.8,.25,1);
+  font-family: inherit;
+  color: #292832;
+  box-sizing: border-box;
+}
+#transaction-screen.active {
+  transform: translateX(0);
+}
+#transaction-screen * { box-sizing: border-box; }
+
+#transaction-screen .tx-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
+}
+#transaction-screen h2 {
+  font-size:29px;
+  margin:0;
+}
+#transaction-screen .tx-close {
+  border:0;
+  background:white;
+  color:#4a087f;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  font-size:28px;
+  cursor:pointer;
+}
+#transaction-screen .tx-summary {
+  background:#310b4b;
+  color:white;
+  padding:24px;
+  border-radius:22px;
+  margin-bottom:25px;
+}
+#transaction-screen .tx-summary small {
+  opacity:.8;
+  font-size:15px;
+}
+#transaction-screen .tx-summary strong {
+  display:block;
+  font-size:30px;
+  margin-top:8px;
+}
+#transaction-screen .tx-row {
+  background:white;
+  border-radius:18px;
+  padding:19px 16px;
+  margin-bottom:13px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 5px 20px #310b4b0b;
+  animation:txAppear .35s ease both;
+}
+#transaction-screen .tx-icon {
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#f0e8fa;
+  display:grid;
+  place-items:center;
+  font-size:23px;
+  flex-shrink:0;
+}
+#transaction-screen .tx-info {
+  flex:1;
+  min-width:0;
+}
+#transaction-screen .tx-info strong {
+  display:block;
+  font-size:16px;
+  margin-bottom:5px;
+}
+#transaction-screen .tx-info small {
+  color:#77737e;
+  font-size:13px;
+}
+#transaction-screen .tx-amount {
+  font-size:17px;
+  font-weight:800;
+  white-space:nowrap;
+}
+#transaction-screen .tx-status {
+  display:block;
+  color:#27834a;
+  font-size:12px;
+  margin-top:5px;
+  text-align:right;
+}
+@keyframes txAppear {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+</style>
+
+<div id="transaction-screen" aria-hidden="true">
+  <div class="tx-header">
+    <div>
+      <small style="color:#77737e">YOUR ACCOUNT</small>
+      <h2>Transactions</h2>
+    </div>
+    <button class="tx-close" id="tx-close" aria-label="Close">×</button>
+  </div>
+
+  <div class="tx-summary">
+    <small>Sample transactions this week</small>
+    <strong>£22.85</strong>
+    <small>2 sample payments</small>
+  </div>
+
+  <h3 style="margin:25px 0 16px">Recent activity</h3>
+
+  <div class="tx-row">
+    <div class="tx-icon">☕</div>
+    <div class="tx-info">
+      <strong>COFFEE HOUSE</strong>
+      <small>Today · 09:14 · Sample card</small>
+    </div>
+    <div>
+      <div class="tx-amount">−£4.60</div>
+      <span class="tx-status">Sample payment</span>
+    </div>
+  </div>
+
+  <div class="tx-row">
+    <div class="tx-icon">🛒</div>
+    <div class="tx-info">
+      <strong>GROCERY MARKET</strong>
+      <small>Yesterday · Sample card</small>
+    </div>
+    <div>
+      <div class="tx-amount">−£18.25</div>
+      <span class="tx-status">Sample payment</span>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:#77737e;font-size:13px;margin-top:30px">
+    Fictional prototype · No real banking transactions.
+  </p>
+</div>
+
+<script>
+(function () {
+  const screen = document.getElementById("transaction-screen");
+  const close = document.getElementById("tx-close");
+
+  function openTransactions() {
+    screen.classList.add("active");
+    screen.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeTransactions() {
+    screen.classList.remove("active");
+    screen.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  close.addEventListener("click", closeTransactions);
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closeTransactions();
+  });
+
+  // Detect the notification control in the top-right header.
+  document.addEventListener("click", function(e) {
+    const control = e.target.closest(
+      'button, [role="button"], a'
+    );
+    if (!control || screen.contains(control)) return;
+
+    const label = (
+      (control.getAttribute("aria-label") || "") + " " +
+      (control.getAttribute("title") || "") + " " +
+      (control.innerText || "")
+    ).toLowerCase();
+
+    const svg = control.querySelector("svg");
+    const header = control.closest(
+      ".top-actions, .header-actions, .top-right-actions, header"
+    );
+
+    const looksLikeNotification =
+      /notification|bell|alerts/.test(label) ||
+      (!!header && !!svg && /\b5\b/.test(label));
+
+    if (looksLikeNotification) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openTransactions();
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
