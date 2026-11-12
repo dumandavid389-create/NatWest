@@ -3197,5 +3197,539 @@ document.addEventListener("DOMContentLoaded", function () {
 })();
 </script>
 
+<style>
+/* PREMIUM DEMO APP UPGRADE */
+:root{--motion:cubic-bezier(.2,.8,.2,1)}
+body{scroll-behavior:smooth}
+button,.widget,.account-card,.add-account,.transaction{
+  -webkit-tap-highlight-color:transparent;
+}
+button{transition:transform .18s var(--motion),opacity .18s,box-shadow .2s}
+button:active{transform:scale(.97)}
+.nav-item{transition:background .25s,color .25s,transform .25s}
+.nav-item.active{animation:navPop .35s var(--motion)}
+@keyframes navPop{50%{transform:scale(1.07)}}
+.premium-screen{
+  position:fixed;inset:0;z-index:3000;
+  background:#f2f1f7;color:#292832;
+  overflow-y:auto;padding:calc(env(safe-area-inset-top) + 16px) 19px calc(35px + env(safe-area-inset-bottom));
+  transform:translateY(18px);opacity:0;visibility:hidden;
+  transition:opacity .28s,transform .35s var(--motion),visibility .28s;
+}
+.premium-screen.open{opacity:1;visibility:visible;transform:none}
+.premium-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:27px;min-height:48px;
+}
+.premium-header h2{font-size:22px;font-weight:650;margin:0}
+.premium-back{
+  width:46px;height:46px;border:0;border-radius:50%;
+  background:white;color:#351047;font-size:27px;
+}
+.premium-card{
+  background:white;border-radius:23px;padding:21px;
+  margin-bottom:15px;box-shadow:0 8px 28px #28153b0c;
+  animation:cardEnter .45s var(--motion) both;
+}
+@keyframes cardEnter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.premium-row{display:flex;align-items:center;gap:13px}
+.premium-icon{
+  width:47px;height:47px;border-radius:15px;
+  display:grid;place-items:center;background:#f0e8f8;
+  color:#4a087f;font-size:23px;flex-shrink:0;
+}
+.premium-muted{color:#77737e;font-size:13px;line-height:1.5}
+.premium-title{font-size:17px;font-weight:700}
+.premium-amount{font-size:32px;font-weight:800;letter-spacing:-1px}
+.premium-field{display:block;margin:17px 0 7px;font-size:13px;font-weight:650}
+.premium-input{
+  width:100%;height:53px;border:1px solid #ded8e6;
+  border-radius:13px;background:#fff;padding:0 14px;
+  font:16px inherit;color:#292832;outline:none;
+}
+.premium-input:focus{border-color:#7136b5;box-shadow:0 0 0 3px #7136b51b}
+.premium-primary,.premium-secondary{
+  width:100%;min-height:52px;border-radius:28px;
+  border:0;padding:13px 18px;font-size:15px;font-weight:700;
+  margin-top:13px;
+}
+.premium-primary{background:#4a087f;color:white}
+.premium-secondary{background:#eee8f5;color:#4a087f}
+.premium-list-item{
+  display:flex;align-items:center;gap:12px;
+  padding:15px 0;border-bottom:1px solid #eeeaf1;
+}
+.premium-list-item:last-child{border:0}
+.premium-list-item .right{margin-left:auto;text-align:right}
+.premium-list-item strong{font-size:14px}
+.premium-list-item small{display:block;color:#77737e;font-size:11px;margin-top:5px}
+.premium-success{
+  width:100px;height:100px;border-radius:50%;
+  margin:25px auto;background:#e8f8ef;
+  display:grid;place-items:center;color:#16844b;
+}
+.premium-success svg{width:58px;height:58px}
+.premium-success path{
+  fill:none;stroke:currentColor;stroke-width:5;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:90;stroke-dashoffset:90;
+  animation:drawSuccess .7s .15s ease forwards;
+}
+@keyframes drawSuccess{to{stroke-dashoffset:0}}
+.security-face{
+  width:112px;height:112px;border-radius:32px;
+  margin:35px auto 22px;background:#160b20;
+  display:grid;place-items:center;
+  box-shadow:0 12px 35px #35104730;
+}
+.security-face svg{width:75px;height:75px}
+.security-face path{
+  fill:none;stroke:#83f0a4;stroke-width:3;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:180;stroke-dashoffset:180;
+}
+.security-face.animate path{animation:faceDraw 1.1s ease forwards}
+@keyframes faceDraw{to{stroke-dashoffset:0}}
+.premium-badge{
+  display:inline-block;background:#f0e8f8;color:#4a087f;
+  padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;
+}
+.premium-notice{
+  padding:13px;border-radius:13px;background:#f0eaf6;
+  color:#62536d;font-size:12px;line-height:1.5;margin-top:16px;
+}
+.premium-empty{text-align:center;padding:35px 12px;color:#77737e}
+@media(prefers-reduced-motion:reduce){
+  .premium-screen,.premium-card,.nav-item{animation:none!important;transition:none!important}
+}
+</style>
+
+<script>
+(function(){
+  const $=(s,root=document)=>root.querySelector(s);
+  const $$=(s,root=document)=>[...root.querySelectorAll(s)];
+  const money=n=>'£'+Number(n).toFixed(2);
+  const storageKey='premiumDemoActivityV1';
+
+  let activity=[];
+  try{activity=JSON.parse(localStorage.getItem(storageKey)||'[]')}catch(e){activity=[]}
+  if(!Array.isArray(activity))activity=[];
+
+  function save(){
+    try{localStorage.setItem(storageKey,JSON.stringify(activity))}catch(e){}
+  }
+
+  function notify(title,message,amount){
+    const centre=window.notifications;
+    if(Array.isArray(centre)){
+      centre.unshift({
+        id:Date.now(),category:'Payments',icon:'↗',
+        title,preview:message,
+        message:message+' This is a fictional prototype notification.',
+        date:new Date().toLocaleString('en-GB'),
+        unread:true
+      });
+      const button=$('#open-notifications');
+      if(button){
+        button.dataset.count=String(centre.filter(n=>n.unread).length);
+      }
+    }
+    const toast=$('.toast');
+    if(toast){
+      toast.textContent=title+(amount?' · '+amount:'');
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),3000);
+    }
+  }
+
+  function addActivity(item){
+    activity.unshift(item);
+    save();
+    notify(item.type==='Transfer'?'Transfer confirmation':'Payment confirmation',
+      item.description+' · '+money(item.amount),money(item.amount));
+  }
+
+  const screen=document.createElement('section');
+  screen.className='premium-screen';
+  screen.id='premium-app-screen';
+  screen.innerHTML='<div id="premium-screen-content"></div>';
+  document.body.appendChild(screen);
+  const content=$('#premium-screen-content',screen);
+
+  let currentPage='';
+
+  function header(title){
+    return `<header class="premium-header">
+      <button class="premium-back" data-page="back" aria-label="Go back">‹</button>
+      <h2>${title}</h2><span style="width:46px"></span>
+    </header>`;
+  }
+
+  function openPage(name,html){
+    currentPage=name;
+    content.innerHTML=html;
+    screen.classList.add('open');
+    document.body.style.overflow='hidden';
+    screen.scrollTop=0;
+  }
+
+  function closePage(){
+    screen.classList.remove('open');
+    document.body.style.overflow='';
+    currentPage='';
+  }
+
+  function home(){
+    closePage();
+    $$('.nav-item').forEach((b,i)=>b.classList.toggle('active',i===0));
+  }
+
+  function profile(){
+    openPage('profile',`
+      ${header('My Profile')}
+      <div class="premium-card" style="text-align:center;padding:30px 20px">
+        <div class="premium-icon" style="width:85px;height:85px;border-radius:25px;margin:auto;font-size:40px">◆</div>
+        <h2 style="margin:20px 0 5px">Demo profile</h2>
+        <p class="premium-muted">Your fictional app profile and preferences</p>
+        <span class="premium-badge">PROTOTYPE PROFILE</span>
+      </div>
+      ${profileGroup('Personal',[
+        ['♙','Personal details','View sample profile details'],
+        ['◉','Credit score','Open your demo credit score'],
+        ['⬡','Security profile','Demo security information'],
+        ['⌘','Managing connections','Connected services demonstration']
+      ])}
+      ${profileGroup('Payments',[
+        ['▣','Pay your contacts','Demo payment options'],
+        ['▤','Statements','View your sample statements']
+      ])}
+      ${profileGroup('Privacy and security',[
+        ['⌑','Change passcode','Demo only'],
+        ['◎','Face ID login','Visual animation demonstration'],
+        ['◉','Biometric approval','Demo only'],
+        ['◷','Auto logout','Demo preference']
+      ])}
+      ${profileGroup('App customisation',[
+        ['⚙','App theme','Light mode'],
+        ['▣','Edit accounts','Use the existing account editor']
+      ])}
+      <button class="premium-secondary" data-page="home">Return to home</button>
+      <p class="premium-muted" style="text-align:center">Fictional prototype. No real profile or security settings are changed.</p>
+    `);
+  }
+
+  function profileGroup(title,items){
+    return `<h3 style="font-size:15px;color:#77737e;margin:25px 0 12px">${title}</h3>
+      <div class="premium-card">${items.map((item,i)=>`
+        <div class="premium-list-item">
+          <span class="premium-icon">${item[0]}</span>
+          <span><strong>${item[1]}</strong><small>${item[2]}</small></span>
+          <span class="right" style="color:#4a087f">›</span>
+        </div>`).join('')}</div>`;
+  }
+
+  function payments(){
+    openPage('payments',`
+      ${header('Payments and transfers')}
+      <div class="premium-card">
+        <span class="premium-badge">DEMO PAYMENT CENTRE</span>
+        <h2 style="font-size:25px;margin:15px 0 5px">What would you like to do?</h2>
+        <p class="premium-muted">Explore the payment journey using fictional details.</p>
+        <button class="premium-primary" data-page="transfer">⇄　Make a transfer</button>
+        <button class="premium-secondary" data-page="payment">＋　Make a card payment demo</button>
+        <button class="premium-secondary" data-page="transactions">▤　Payment history</button>
+        <button class="premium-secondary" data-page="statements">▧　Statements</button>
+      </div>
+      <div class="premium-notice">No money is sent or received. Do not enter real bank details or personal information.</div>
+    `);
+  }
+
+  function transfer(){
+    openPage('transfer',`
+      ${header('New transfer')}
+      <div class="premium-card">
+        <span class="premium-badge">FICTIONAL TRANSFER</span>
+        <label class="premium-field">Recipient name</label>
+        <input class="premium-input" id="demo-recipient" maxlength="45" placeholder="e.g. Alex Taylor">
+        <label class="premium-field">Demo account reference</label>
+        <input class="premium-input" id="demo-reference" maxlength="20" placeholder="DEMO-1234">
+        <label class="premium-field">Amount (£)</label>
+        <input class="premium-input" id="demo-amount" type="number" min="0.01" max="10000" step="0.01" placeholder="0.00">
+        <label class="premium-field">Payment reference</label>
+        <input class="premium-input" id="demo-payment-reference" maxlength="30" placeholder="e.g. Rent">
+        <div class="premium-notice">These are invented details for a visual demonstration only. This does not initiate a real bank transfer.</div>
+        <button class="premium-primary" data-action="review-transfer">Review demo transfer</button>
+      </div>
+    `);
+  }
+
+  function payment(){
+    openPage('payment',`
+      ${header('Card payment demo')}
+      <div class="premium-card">
+        <label class="premium-field">Merchant name</label>
+        <input class="premium-input" id="demo-merchant" maxlength="45" placeholder="e.g. Coffee House">
+        <label class="premium-field">Amount (£)</label>
+        <input class="premium-input" id="demo-card-amount" type="number" min="0.01" max="10000" step="0.01" placeholder="0.00">
+        <div class="premium-notice">This records a fictional card payment in the prototype. It will not charge a card.</div>
+        <button class="premium-primary" data-action="review-card">Continue</button>
+      </div>
+    `);
+  }
+
+  let pending=null;
+
+  function reviewTransfer(){
+    const recipient=$('#demo-recipient').value.trim();
+    const reference=$('#demo-reference').value.trim();
+    const amount=Number($('#demo-amount').value);
+    const paymentRef=$('#demo-payment-reference').value.trim();
+    if(!recipient||!reference||!Number.isFinite(amount)||amount<=0||amount>10000){
+      alert('Enter a recipient, a demo reference and a valid amount.');
+      return;
+    }
+    pending={type:'Transfer',description:'Transfer to '+recipient,amount,reference,paymentRef};
+    review();
+  }
+
+  function reviewCard(){
+    const merchant=$('#demo-merchant').value.trim();
+    const amount=Number($('#demo-card-amount').value);
+    if(!merchant||!Number.isFinite(amount)||amount<=0||amount>10000){
+      alert('Enter a merchant name and a valid amount.');
+      return;
+    }
+    pending={type:'Card payment',description:'Card payment · '+merchant,amount,reference:'DEMO CARD',paymentRef:merchant};
+    review();
+  }
+
+  function review(){
+    openPage('review',`
+      ${header('Review your payment')}
+      <div class="premium-card">
+        <span class="premium-badge">CHECK THE DETAILS</span>
+        <p class="premium-muted" style="margin-top:20px">Payment type</p>
+        <strong>${pending.type}</strong>
+        <p class="premium-muted">Recipient / merchant</p>
+        <strong>${pending.description}</strong>
+        <p class="premium-muted">Demo reference</p>
+        <strong>${pending.reference}</strong>
+        <p class="premium-muted">Amount</p>
+        <div class="premium-amount">${money(pending.amount)}</div>
+        <div class="premium-notice">This is a simulated payment. No real funds will move.</div>
+        <button class="premium-primary" data-page="security">Continue to demo security</button>
+        <button class="premium-secondary" data-page="payments">Cancel</button>
+      </div>
+    `);
+  }
+
+  function security(){
+    openPage('security',`
+      ${header('Security check')}
+      <div class="premium-card" style="text-align:center;padding:28px 20px">
+        <span class="premium-badge">DEMO SECURITY STEP</span>
+        <div class="security-face" id="demo-face">
+          <svg viewBox="0 0 80 80">
+            <path d="M25 14H14v12M55 14h11v12M14 54v12h11M66 54v12H55M25 32c4-6 9-9 15-9s11 3 15 9M25 43c4 7 9 10 15 10s11-3 15-10"/>
+          </svg>
+        </div>
+        <h2>Confirm it's you</h2>
+        <p class="premium-muted">This visual security step imitates a biometric approval screen. It does not use Face ID or verify your identity.</p>
+        <button class="premium-primary" data-action="demo-auth">Approve demo transfer</button>
+        <button class="premium-secondary" data-page="review">Go back</button>
+      </div>
+    `);
+  }
+
+  function complete(){
+    if(!pending)return;
+    const item={
+      id:'DEMO-'+Date.now(),
+      type:pending.type,
+      description:pending.description,
+      amount:pending.amount,
+      reference:pending.reference,
+      paymentRef:pending.paymentRef,
+      date:new Date().toISOString(),
+      status:'Completed · Demo'
+    };
+    addActivity(item);
+    pending=null;
+    openPage('complete',`
+      ${header('Confirmation')}
+      <div class="premium-card" style="text-align:center;padding:30px 20px">
+        <span class="premium-badge">DEMO CONFIRMATION</span>
+        <div class="premium-success">
+          <svg viewBox="0 0 60 60"><path d="M12 31l12 12 25-27"/></svg>
+        </div>
+        <h2 style="font-size:25px">Demo payment complete</h2>
+        <div class="premium-amount">${money(item.amount)}</div>
+        <p class="premium-muted">${item.description}</p>
+        <p class="premium-muted">Reference: ${item.id}</p>
+        <span class="premium-badge">SIMULATED · NO MONEY MOVED</span>
+        <button class="premium-primary" data-page="transactions">View payment history</button>
+        <button class="premium-secondary" data-page="statements">View statement</button>
+        <button class="premium-secondary" data-page="home">Return home</button>
+      </div>
+    `);
+  }
+
+  function transactions(){
+    const rows=activity.map(item=>`
+      <div class="premium-list-item">
+        <span class="premium-icon">${item.type==='Transfer'?'⇄':'▣'}</span>
+        <span style="min-width:0;flex:1">
+          <strong>${escapeHTML(item.description)}</strong>
+          <small>${new Date(item.date).toLocaleString('en-GB')} · ${item.status}</small>
+          <small>${escapeHTML(item.id)}</small>
+        </span>
+        <span class="right"><strong>${money(item.amount)}</strong></span>
+      </div>`).join('');
+    openPage('transactions',`
+      ${header('Payment history')}
+      <div class="premium-card">
+        <span class="premium-badge">YOUR DEMO ACTIVITY</span>
+        ${rows||'<div class="premium-empty">No demo payments yet.<br>Complete a sample payment to see it here.</div>'}
+      </div>
+      <button class="premium-primary" data-page="payments">Make another demo payment</button>
+    `);
+  }
+
+  function statements(){
+    const rows=activity.map(item=>`
+      <div class="premium-list-item">
+        <span class="premium-icon">▤</span>
+        <span style="flex:1;min-width:0">
+          <strong>${escapeHTML(item.description)}</strong>
+          <small>${new Date(item.date).toLocaleDateString('en-GB')} · ${item.id}</small>
+        </span>
+        <span class="right"><strong>${money(item.amount)}</strong><small>Demo</small></span>
+      </div>`).join('');
+    openPage('statements',`
+      ${header('Statements')}
+      <div class="premium-card">
+        <span class="premium-badge">LIVE DEMO ACTIVITY</span>
+        <h3>Payment activity statement</h3>
+        <p class="premium-muted">This statement is generated from the payments recorded in this prototype.</p>
+        ${rows||'<div class="premium-empty">Your statement will appear here after your first demo payment.</div>'}
+        <button class="premium-primary" data-action="print-statement">Print / save demo statement</button>
+      </div>
+      <p class="premium-muted" style="text-align:center">Not a bank statement. No real account activity is included.</p>
+    `);
+  }
+
+  function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function printStatement(){
+    const rows=activity.map(item=>`
+      <tr><td>${escapeHTML(new Date(item.date).toLocaleString('en-GB'))}</td>
+      <td>${escapeHTML(item.description)}</td><td>${escapeHTML(item.id)}</td>
+      <td>${money(item.amount)}</td><td>${escapeHTML(item.status)}</td></tr>`).join('');
+    const w=window.open('','_blank');
+    if(!w){alert('Allow pop-ups to print your demo statement.');return;}
+    w.document.write(`<!doctype html><html><head><title>Demo statement</title>
+      <style>body{font:14px Arial;padding:30px;color:#292832}h1{color:#4a087f}
+      table{width:100%;border-collapse:collapse;margin-top:25px}
+      td,th{padding:12px;border-bottom:1px solid #ddd;text-align:left}
+      .note{margin-top:25px;color:#777}</style></head><body>
+      <h1>Fictional Demo Statement</h1><p>Prototype activity only</p>
+      <table><thead><tr><th>Date</th><th>Description</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <p class="note">Not an official bank statement. No real transactions or balances.</p>
+      <script>window.onload=()=>window.print()<\/script></body></html>`);
+    w.document.close();
+  }
+
+  // Capture interactions before the original demo placeholder handlers.
+  document.addEventListener('click',function(e){
+    const logo=e.target.closest('.app-logo,.intro-logo');
+    if(logo){e.preventDefault();e.stopImmediatePropagation();profile();return;}
+
+    const help=e.target.closest('.nav-item');
+    if(help&&help.textContent.toLowerCase().includes('help')){
+      e.preventDefault();e.stopImmediatePropagation();
+      return; // Help intentionally does nothing.
+    }
+
+    const nav=e.target.closest('.nav-item');
+    if(nav){
+      const label=nav.textContent.trim().toLowerCase();
+      e.preventDefault();e.stopImmediatePropagation();
+      $$('.nav-item').forEach(b=>b.classList.toggle('active',b===nav));
+      if(label.includes('payment'))payments();
+      else if(label.includes('insight')){
+        const weekly=$$('.widget').find(w=>w.textContent.toLowerCase().includes('weekly spend'));
+        if(weekly)weekly.click();
+        else payments();
+      }else if(label.includes('apply')){
+        openPage('apply',`${header('Explore products')}
+          <div class="premium-card"><h3>Explore the demo</h3>
+          <p class="premium-muted">Explore sample product information. No applications are submitted.</p>
+          <button class="premium-primary" data-page="profile">Profile and settings</button>
+          <button class="premium-secondary" data-page="payments">Payments demonstration</button></div>`);
+      }else home();
+      return;
+    }
+  },true);
+
+  // The logo opens the profile page; the notifications remain available.
+  document.addEventListener('click',function(e){
+    const action=e.target.closest('[data-page]')?.dataset.page;
+    if(action){
+      e.preventDefault();e.stopImmediatePropagation();
+      const pages={home,payments,transfer, payment,transactions,statements,profile,security};
+      if(action==='back'){home();return;}
+      if(pages[action])pages[action]();
+      return;
+    }
+    const task=e.target.closest('[data-action]')?.dataset.action;
+    if(!task)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    if(task==='review-transfer')reviewTransfer();
+    if(task==='review-card')reviewCard();
+    if(task==='demo-auth'){
+      const face=$('#demo-face');
+      if(face)face.classList.add('animate');
+      setTimeout(complete,1250);
+    }
+    if(task==='print-statement')printStatement();
+  },true);
+
+  // Keep the existing Help item inert, including keyboard activation.
+  const helpButton=$$('.nav-item').find(b=>b.textContent.trim().toLowerCase().includes('help'));
+  if(helpButton)helpButton.setAttribute('aria-label','Help - not active in this demo');
+
+  // Make the wallet and account area open a transaction view.
+  const wallet=$('.wallet-art');
+  const accountCard=$('.account-card');
+  [wallet,accountCard].filter(Boolean).forEach(el=>{
+    el.style.cursor='pointer';
+    el.addEventListener('click',e=>{
+      if(e.target.closest('.account-menu'))return;
+      transactions();
+    });
+  });
+
+  // Existing notification centre will show new payment notifications.
+  updateExistingNotificationCount();
+  function updateExistingNotificationCount(){
+    const b=$('#open-notifications');
+    if(b&&Array.isArray(window.notifications)){
+      b.dataset.count=String(window.notifications.filter(n=>n.unread).length);
+    }
+  }
+
+  // Escape closes the current overlay.
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&screen.classList.contains('open'))home();
+  });
+
+  // Expose no real banking actions; only local demo screens.
+  window.demoBankingPrototype={openProfile:profile,openPayments:payments,openTransactions:transactions,openStatements:statements};
+})();
+</script>
+
 </body>
 </html>
