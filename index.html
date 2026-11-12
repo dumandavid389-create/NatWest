@@ -2612,5 +2612,185 @@ document.addEventListener("click", function(e) {
 })();
 </script>
 
+<style>
+/* Suggestions cards */
+.demo-suggestions {
+  margin: 26px 0;
+}
+.demo-suggestions h2 {
+  font-size: 22px;
+  margin: 0 0 15px;
+}
+.demo-suggestion-card {
+  background: #eee8f5;
+  border: 7px solid white;
+  border-radius: 25px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.demo-suggestion-content {
+  padding: 28px 20px;
+  text-align: center;
+  color: #4a087f;
+}
+.demo-suggestion-content h3 {
+  font-size: 21px;
+  margin: 5px 0 12px;
+}
+.demo-suggestion-content p {
+  color: #716b78;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.demo-suggestion-art {
+  font-size: 75px;
+  padding: 18px;
+}
+.demo-suggestion-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 19px;
+  color: #292832;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 600;
+}
+.demo-suggestion-link span:last-child {
+  color: #4a087f;
+  font-size: 25px;
+}
+
+/* Transactions panel */
+.demo-transactions-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: #f2f1f7;
+  padding: calc(env(safe-area-inset-top) + 20px) 18px 30px;
+  overflow-y: auto;
+  display: none;
+}
+.demo-transactions-panel.open {
+  display: block;
+}
+.demo-transactions-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.demo-transactions-head h2 {
+  font-size: 25px;
+  margin: 0;
+}
+.demo-transactions-close {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #310b4b;
+  font-size: 27px;
+}
+.demo-transactions-panel .transactions {
+  display: block !important;
+  margin-top: 0;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const originalTransactions = document.querySelector(".transactions");
+  const headerPill = document.querySelector(".header-actions");
+
+  if (!originalTransactions || !headerPill) return;
+
+  /* Save a copy of the original demo transactions */
+  const transactionCopy = originalTransactions.cloneNode(true);
+
+  /* Replace the home-screen transactions with suggestions */
+  const suggestions = document.createElement("section");
+  suggestions.className = "demo-suggestions";
+
+  suggestions.innerHTML = `
+    <h2>Suggestions</h2>
+
+    <div class="demo-suggestion-card">
+      <div class="demo-suggestion-content">
+        <h3>Explore ways to manage your money</h3>
+        <p>Discover helpful information, tools and ideas for managing your finances.</p>
+        <div class="demo-suggestion-art">💡</div>
+      </div>
+      <a class="demo-suggestion-link"
+         href="https://www.natwest.com/"
+         target="_blank" rel="noopener noreferrer">
+        <span>Take a look</span><span>↗</span>
+      </a>
+    </div>
+
+    <div class="demo-suggestion-card">
+      <div class="demo-suggestion-content">
+        <h3>Discover more from NatWest</h3>
+        <p>Visit the official website to explore available information and services.</p>
+        <div class="demo-suggestion-art">✨</div>
+      </div>
+      <a class="demo-suggestion-link"
+         href="https://www.natwest.com/"
+         target="_blank" rel="noopener noreferrer">
+        <span>Visit NatWest</span><span>↗</span>
+      </a>
+    </div>
+  `;
+
+  originalTransactions.replaceWith(suggestions);
+
+  /* Create the transactions screen */
+  const panel = document.createElement("section");
+  panel.className = "demo-transactions-panel";
+  panel.id = "demo-transactions-panel";
+
+  panel.innerHTML = `
+    <div class="demo-transactions-head">
+      <h2>Recent transactions</h2>
+      <button class="demo-transactions-close"
+              type="button" aria-label="Close transactions">×</button>
+    </div>
+    <p style="color:#77737e;font-size:13px;margin-bottom:18px">
+      Fictional sample transactions
+    </p>
+  `;
+
+  panel.appendChild(transactionCopy);
+  document.body.appendChild(panel);
+
+  function openTransactions() {
+    panel.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeTransactions() {
+    panel.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  panel.querySelector(".demo-transactions-close")
+    .addEventListener("click", closeTransactions);
+
+  /* Tapping anywhere on the top pill opens transactions */
+  headerPill.addEventListener("click", function () {
+    openTransactions();
+  });
+
+  /* Close with Escape */
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeTransactions();
+  });
+
+});
+</script>
+
 </body>
 </html>
