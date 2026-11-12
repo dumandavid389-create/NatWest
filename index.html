@@ -12,7 +12,7 @@
 
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-<title>Banking Dashboard Demo</title>
+<title>Protected By FSCS</title>
 
 <style>
 
@@ -70,9 +70,9 @@ button:focus-visible{outline:3px solid #9b65cf;outline-offset:3px}
 
 @keyframes brandIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
 
-.demo-banner{padding:11px 15px;text-align:center;color:white;background:var(--deep);font-size:12px;line-height:1.5}
+.FSCS-banner{padding:11px 15px;text-align:center;color:white;background:var(--deep);font-size:12px;line-height:1.5}
 
-.demo-banner strong{color:#ffd28b}
+.FSCS-banner strong{color:#ffd28b}
 
 .header{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between}
 
@@ -348,9 +348,9 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
 .delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
 
-.add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
+.add-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
 
-/* Notification centre — fictional prototype interactions */
+/* Notification centre —  */
 
 .notification-backdrop{position:fixed;inset:0;z-index:1050;background:rgba(20,12,29,.48);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s ease}
 
@@ -464,7 +464,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
     </div>
 
-    <div class="intro-caption">Verifying device · visual demo only</div>
+    <div class="intro-caption">Verifying device · </div>
 
   </div>
 
@@ -472,11 +472,11 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   <div class="intro-brand">
 
-    <div class="intro-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+    <div class="intro-logo"><img src="apple-touch-icon.png" alt=""></div>
 
     <strong>NatWest</strong>
 
-    <small>FICTIONAL PROTOTYPE</small>
+    <small>Protected By FSCS</small>
 
   </div>
 
@@ -484,7 +484,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
 </section>
 
-<div class="demo-banner"><strong>Prototype only</strong> · Fictional sample account information — not connected to NatWest or any real bank.</div>
+<div class="demo-banner"><strong></strong> </div>
 
 <header class="header">
 
@@ -494,7 +494,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
     <button type="button" class="notification" id="open-notifications" data-count="5" aria-label="Open notifications">♧</button>
 
-    <button data-message="Search is not connected in this demo." aria-label="Search">⌕</button>
+    <button data-message="Search is not connected " aria-label="Search">⌕</button>
 
   </div>
 
@@ -502,7 +502,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
 <div class="notification-backdrop" id="notification-backdrop"></div>
 
-<aside class="notification-panel" id="notification-panel" aria-label="Demo notifications" aria-hidden="true">
+<aside class="notification-panel" id="notification-panel" aria-label="notifications" aria-hidden="true">
 
   <div class="notification-head">
 
@@ -564,11 +564,11 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
     <div class="account-primary">
 
-      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+      <button class="account-menu" data-message="Account options only." aria-label="Account options">•••</button>
 
-      <div class="account-name" id="account-name-1">DEMO ACCOUNT</div>
+      <div class="account-name" id="account-name-1">ACCOUNT</div>
 
-      <div class="account-number" id="account-details-1">Select Account · Sample number · 00-00-00</div>
+      <div class="account-number" id="account-details-1">Select Account · Sort code · 00-00-00</div>
 
       <div class="account-visual">
 
@@ -598,9 +598,9 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
       <div>
 
-        <div class="secondary-name" id="account-name-2">Sample Current Account</div>
+        <div class="secondary-name" id="account-name-2">Current Account</div>
 
-        <div class="secondary-type" id="account-details-2">Fictional sample account</div>
+        <div class="secondary-type" id="account-details-2">Account</div>
 
       </div>
 
@@ -608,7 +608,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
         <div class="secondary-balance" id="account-balance-2">£58.44</div>
 
-        <div class="available">Sample available balance</div>
+        <div class="available">Available Balance</div>
 
       </div>
 
@@ -616,7 +616,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   </section>
 
-  <button class="add-account" data-message="Adding accounts is not available in this demo." style="width:100%;border:0;text-align:left;color:inherit">
+  <button class="add-account" data-message="Adding accounts is not available." style="width:100%;border:0;text-align:left;color:inherit">
 
     <span class="bank-stack"><img src="bank-logo-stack.png" alt="Halifax, Barclays and RBS logos"></span>
 
@@ -628,7 +628,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   <div class="pots-heading">Pots <span class="new-tag">New</span></div>
 
-  <button class="create-pot" data-message="Creating pots is disabled in this demo.">
+  <button class="create-pot" data-message="Creating pots not available.">
 
     <span class="plus">＋</span>
 
@@ -640,7 +640,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
     <span>Widgets</span>
 
-    <button class="plain-button" data-message="Widget editing is disabled in this demo.">Edit　›</button>
+    <button class="plain-button" data-message="Widget editing is disabled.">Edit　›</button>
 
   </div>
 
@@ -650,7 +650,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
       <div class="widget-title">Credit score</div><div class="widget-icon">◉</div>
 
-      <div class="widget-value">—</div><div class="widget-caption">Sample widget</div>
+      <div class="widget-value">—</div><div class="widget-caption">widget</div>
 
     </article>
 
@@ -658,7 +658,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
       <div class="widget-title">Weekly spend</div><div class="widget-icon">▥</div>
 
-      <div class="widget-value">£19.42</div><div class="widget-caption">Fictional sample data</div>
+      <div class="widget-value">£19.42</div><div class="widget-caption"></div>
 
     </article>
 
@@ -672,7 +672,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
       <div class="merchant-icon">☕</div>
 
-      <div class="merchant"><strong>COFFEE HOUSE</strong><small>Today · 09:14 · Sample card</small></div>
+      <div class="merchant"><strong>COFFEE HOUSE</strong><small>Today · 09:14 · card</small></div>
 
       <div class="amount">−£4.60</div>
 
@@ -682,7 +682,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
       <div class="merchant-icon">🛒</div>
 
-      <div class="merchant"><strong>GROCERY MARKET</strong><small>Yesterday · Sample card</small></div>
+      <div class="merchant"><strong>GROCERY MARKET</strong><small>Yesterday · card</small></div>
 
       <div class="amount">−£18.25</div>
 
@@ -692,9 +692,9 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
 </main>
 
-<nav class="bottom-nav" aria-label="Demo navigation">
+<nav class="bottom-nav" aria-label="navigation">
 
-  <button class="nav-item active" data-message="You are viewing the demo home screen.">
+  <button class="nav-item active" data-message="You are viewing the home screen.">
 
     <span class="nav-icon">
 
@@ -704,7 +704,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   </button>
 
-  <button class="nav-item" data-message="Help is not connected in this demo.">
+  <button class="nav-item" data-message="Help is not connected.">
 
     <span class="nav-icon">
 
@@ -720,7 +720,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   </button>
 
-  <button class="nav-item" aria-label="Open demo payments">
+  <button class="nav-item" aria-label="Open payments">
 
     <span class="nav-icon">
 
@@ -730,7 +730,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   </button>
 
-  <button class="nav-item" data-message="Insights use fictional sample data.">
+  <button class="nav-item" data-message="Insights.">
 
     <span class="nav-icon">
 
@@ -744,7 +744,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   </button>
 
-  <button class="nav-item" data-message="Applications are disabled in this demo.">
+  <button class="nav-item" data-message="Applications are disabled.">
 
     <span class="nav-icon">
 
@@ -762,7 +762,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
 </nav>
 
-<footer>Fictional visual prototype only. Not an official NatWest service. No real accounts, authentication, payments or banking services are connected.</footer>
+<footer>Protected By FSCS.</footer>
 
 <div class="toast" role="status" aria-live="polite"></div>
 
@@ -770,9 +770,9 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
   <section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
 
-    <h2 id="editor-title">Edit sample accounts</h2>
+    <h2 id="editor-title">Edit accounts</h2>
 
-    <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
+    <p class="editor-intro">Changes are stored only in the app.</p>
 
     <h3>Dashboard greeting</h3>
 
@@ -782,7 +782,7 @@ footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--mute
 
     <div id="editor-accounts"></div>
 
-    <button type="button" class="add-demo-account" id="add-demo-account">＋ Add demo account</button>
+    <button type="button" class="add-account" id="add-account">＋ Add account</button>
 
     <div class="editor-actions">
 
@@ -838,33 +838,33 @@ document.querySelectorAll(".nav-item").forEach(item=>{
 
 });
 
-/* Fictional demo notification data */
+/*  notification data */
 
 const notifications=[
 
-  {id:1,category:"Payments",icon:"↗",title:"Payment received",preview:"A sample payment has been added to your demo account.",message:"This is a fictional incoming payment notification for the prototype. No real payment has taken place.",date:"Today · 09:42",unread:true},
+  {id:1,category:"Payments",icon:"↗",title:"Payment received",preview:"A  payment has been added to your demo account.",message:"This is a incoming payment notification.",date:"Today · 09:42",unread:true},
 
-  {id:2,category:"Cards",icon:"▣",title:"Card payment",preview:"A sample card payment was made.",message:"This is a fictional card transaction notification. It does not represent a real purchase or bank transaction.",date:"Today · 08:30",unread:true},
+  {id:2,category:"Cards",icon:"▣",title:"Card payment",preview:"A card payment was made.",message:"This is a card transaction notification.",date:"Today · 08:30",unread:true},
 
-  {id:3,category:"Security",icon:"⌑",title:"Security reminder",preview:"Remember to keep your sign-in details private.",message:"Never share passwords, PINs or one-time passcodes. This is a general demo reminder and is not a real security alert.",date:"Yesterday · 18:20",unread:true},
+  {id:3,category:"Security",icon:"⌑",title:"Security reminder",preview:"Remember to keep your sign-in details private.",message:"Never share passwords, PINs or one-time passcodes. This is a general demo reminder and is a security alert.",date:"Yesterday · 18:20",unread:true},
 
-  {id:4,category:"Account",icon:"◉",title:"Account overview updated",preview:"Your sample account overview is ready to view.",message:"The dashboard displays fictional sample account information. No real account has been updated.",date:"Yesterday · 14:15",unread:true},
+  {id:4,category:"Account",icon:"◉",title:"Account overview updated",preview:"Your account overview is ready to view.",message:"The dashboard displays account information.",date:"Yesterday · 14:15",unread:true},
 
-  {id:5,category:"Statements",icon:"▤",title:"Sample statement available",preview:"Your fictional monthly statement is ready.",message:"This is a demonstration notification. No actual bank statement has been generated.",date:"Yesterday · 09:10",unread:true},
+  {id:5,category:"Statements",icon:"▤",title:"Statement available",preview:"Your monthly statement is ready.",message:"This is a notification.",date:"Yesterday · 09:10",unread:true},
 
-  {id:6,category:"Payments",icon:"↙",title:"Standing order reminder",preview:"A sample standing order reminder.",message:"This is an example reminder for the fictional prototype. No standing order is scheduled.",date:"12 Nov · 11:20",unread:false},
+  {id:6,category:"Payments",icon:"↙",title:"Standing order reminder",preview:"A sample standing order reminder.",message:".",date:"12 Nov · 11:20",unread:false},
 
-  {id:7,category:"Cards",icon:"▣",title:"Card settings",preview:"Review your fictional card settings.",message:"This sample notification demonstrates a card settings update. No real card settings have changed.",date:"11 Nov · 16:40",unread:false},
+  {id:7,category:"Cards",icon:"▣",title:"Card settings",preview:"Review your fictional card settings.",message:"This notification demonstrates a card settings update. Card settings have changed.",date:"11 Nov · 16:40",unread:false},
 
   {id:8,category:"Security",icon:"⌑",title:"Online safety tips",preview:"A few reminders to help protect your information.",message:"Use strong, unique passwords and never share one-time passcodes. This is general educational information.",date:"10 Nov · 10:05",unread:false},
 
-  {id:9,category:"Account",icon:"◉",title:"Profile details",preview:"Your demo profile details can be reviewed.",message:"This is a fictional profile reminder. It does not refer to a real bank profile.",date:"9 Nov · 15:30",unread:false},
+  {id:9,category:"Account",icon:"◉",title:"Profile details",preview:"Your profile details can be reviewed.",message:"",date:"9 Nov · 15:30",unread:false},
 
-  {id:10,category:"Statements",icon:"▤",title:"Monthly summary",preview:"Your sample monthly summary is ready.",message:"This is a fictional monthly summary notification for the dashboard demonstration.",date:"8 Nov · 09:00",unread:false},
+  {id:10,category:"Statements",icon:"▤",title:"Monthly summary",preview:"Your monthly summary is ready.",message:"This is a monthly summary.",date:"8 Nov · 09:00",unread:false},
 
-  {id:11,category:"Payments",icon:"↗",title:"Payment scheduled",preview:"A sample payment reminder.",message:"This is only a demonstration. No real payment has been scheduled.",date:"7 Nov · 12:10",unread:false},
+  {id:11,category:"Payments",icon:"↗",title:"Payment scheduled",preview:"A payment reminder.",message:".",date:"7 Nov · 12:10",unread:false},
 
-  {id:12,category:"Cards",icon:"▣",title:"Contactless payments",preview:"Learn about contactless payment safety.",message:"This notification contains general information for the fictional prototype.",date:"6 Nov · 13:45",unread:false},
+  {id:12,category:"Cards",icon:"▣",title:"Contactless payments",preview:"Learn about contactless payment safety.",message:"This notification contains general information.",date:"6 Nov · 13:45",unread:false},
 
   {id:13,category:"Security",icon:"⌑",title:"Device safety",preview:"Keep your device software up to date.",message:"Install operating system and app updates to help protect your device. This is not a real security alert.",date:"5 Nov · 08:15",unread:false},
 
