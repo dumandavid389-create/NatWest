@@ -1,0 +1,2501 @@
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#f2f1f7">
+
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<title>Banking Dashboard Demo</title>
+
+<style>
+
+:root{--purple:#4a087f;--deep:#310b4b;--ink:#292832;--muted:#77737e;--bg:#f2f1f7;--white:#fff;--line:#e9e6ed;--shadow:0 12px 35px rgba(37,25,53,.10);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+
+*{box-sizing:border-box}
+
+body{margin:0;background:var(--bg);color:var(--ink)}
+
+button{font:inherit;cursor:pointer}
+
+button:focus-visible{outline:3px solid #9b65cf;outline-offset:3px}
+
+.intro{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;overflow:hidden;color:white;background:radial-gradient(ellipse at center,#692b88,#42145f 58%,#2d0c45);transition:opacity .7s ease,visibility .7s ease}
+
+.intro.hide{opacity:0;visibility:hidden;pointer-events:none}
+
+.intro-top{position:absolute;top:calc(env(safe-area-inset-top) + 18px);left:0;right:0;display:flex;align-items:center;flex-direction:column;gap:10px}
+
+.intro-face{width:72px;height:72px;border-radius:21px;display:grid;place-items:center;background:#09080d;box-shadow:0 8px 28px #16082166;animation:faceAppear .55s ease both}
+
+.intro-face svg{width:45px;height:45px}
+
+.face-outline,.face-check{fill:none;stroke:#72f29a;stroke-linecap:round;stroke-linejoin:round}
+
+.face-outline{stroke-width:2.5;stroke-dasharray:145;stroke-dashoffset:145;animation:drawFace 1.05s ease .35s forwards}
+
+.face-check{stroke-width:3.4;stroke-dasharray:40;stroke-dashoffset:40;animation:drawCheck .42s ease 1.65s forwards}
+
+.intro-caption{font-size:12px;color:#f3eaf7;opacity:0;animation:fadeIn .4s ease .55s forwards}
+
+.intro-spinner{position:absolute;top:calc(env(safe-area-inset-top) + 132px);left:50%;width:18px;height:18px;margin-left:-9px;border:2px solid #ffffff38;border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+
+.intro-brand{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;animation:brandIn .7s ease .15s both}
+
+.intro-logo{width:88px;height:88px;border-radius:23px;overflow:hidden;display:grid;place-items:center}
+
+.intro-logo img{width:100%;height:100%;object-fit:contain}
+
+.intro-brand strong{font-size:28px;font-weight:800}
+
+.intro-brand small{font-size:10px;letter-spacing:1.5px;color:#eadcf1}
+
+.intro-foot{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 25px);font-size:10px;letter-spacing:.5px;color:#e6d7ed;text-align:center;padding:0 20px}
+
+@keyframes faceAppear{from{opacity:0;transform:translateY(-12px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+@keyframes drawFace{to{stroke-dashoffset:0}}
+
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+
+@keyframes fadeIn{to{opacity:1}}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@keyframes brandIn{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+
+.demo-banner{padding:11px 15px;text-align:center;color:white;background:var(--deep);font-size:12px;line-height:1.5}
+
+.demo-banner strong{color:#ffd28b}
+
+.header{padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between}
+
+.app-logo{width:58px;height:58px;border-radius:17px;overflow:hidden;display:grid;place-items:center}
+
+.app-logo img{width:100%;height:100%;object-fit:contain}
+
+.header-actions{display:flex;align-items:center;gap:24px;background:#ffffffd9;border-radius:40px;padding:12px 20px;box-shadow:0 5px 20px #2113330c}
+
+.header-actions button{border:0;background:none;color:var(--purple);font-size:27px;padding:0}
+
+.notification{position:relative}
+
+.notification:after{content:attr(data-count);position:absolute;top:-11px;left:-12px;min-width:25px;height:25px;padding:0 5px;border-radius:50px;display:grid;place-items:center;background:#3479e8;color:white;font-size:12px;font-weight:700}.notification[data-count="0"]:after{display:none}
+
+main{padding:20px 17px 115px;max-width:850px;margin:auto}
+
+.section-label{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px;color:#696570;font-size:15px}
+
+.plain-button{border:0;background:none;color:var(--purple);font-size:15px;padding:5px}
+
+.account-card{background:white;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+
+.account-primary{padding:16px 18px 13px;min-height:178px}
+
+.account-name{font-size:17px;font-weight:500}
+
+.account-number{font-size:12px;color:var(--muted);margin-top:5px}
+
+.account-menu{float:right;border:0;background:none;color:var(--purple);font-size:21px;letter-spacing:2px;padding:0}
+
+.account-visual{display:flex;align-items:flex-end;justify-content:space-between;margin-top:13px}
+
+.wallet-art{width:94px;height:78px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer}
+
+.primary-balance{font-size:22px;font-weight:750;padding-bottom:4px}
+
+.account-secondary{border-top:1px solid var(--line);padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+.secondary-name{font-size:16px}
+
+.secondary-type{font-size:12px;color:var(--muted);margin-top:4px}
+
+.secondary-balance{font-size:19px;font-weight:750;text-align:right}
+
+.available{font-size:11px;color:var(--muted);margin-top:4px;text-align:right}
+
+/* Add another account section */
+
+.add-account{background:white;border-radius:15px;padding:16px 17px;display:flex;align-items:center;gap:10px;margin:0 0 28px;min-height:72px;box-shadow:0 5px 20px #21133308}
+
+.bank-stack{display:flex;align-items:center;width:70px;min-width:70px;height:44px;flex:0 0 70px;overflow:hidden}
+
+.bank-stack img{width:70px;height:auto;max-height:44px;display:block;object-fit:contain}
+
+.add-text{font-size:14px;line-height:1.25;font-weight:500}
+
+.add-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.25}
+
+.more{margin-left:auto;color:var(--purple);font-size:20px;letter-spacing:2px;flex:0 0 auto}
+
+.pots-heading{margin:0 0 14px;color:#696570;font-size:15px}
+
+.new-tag{display:inline-block;margin-left:9px;padding:3px 9px;border-radius:15px;background:#3479e8;color:white;font-size:12px}
+
+.create-pot{width:100%;text-align:left;padding:22px 19px;border:2px dashed var(--purple);border-radius:14px;background:transparent;color:var(--purple);display:flex;align-items:center;gap:17px;margin-bottom:28px}
+
+.plus{font-size:31px;font-weight:300}
+
+.create-title{font-size:18px}
+
+.create-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+.widgets-heading{margin:0 0 14px}
+
+.widget-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+
+.widget{min-height:190px;background:white;border-radius:23px;padding:20px 12px;text-align:center;box-shadow:var(--shadow)}
+
+.widget-title{font-size:14px;color:#706b76}
+
+.widget-icon{font-size:52px;color:#783bd1;margin:18px 0 9px}
+
+.widget-value{font-size:22px;font-weight:750}
+
+.widget-caption{font-size:12px;color:var(--muted);margin-top:5px}
+
+.transactions{margin-top:26px;background:white;border-radius:22px;padding:21px;box-shadow:var(--shadow)}
+
+.transactions h2{font-size:19px;margin:0 0 18px}
+
+.transaction{display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--line)}
+
+.merchant-icon{width:43px;height:43px;border-radius:50%;background:#f2eff5;display:grid;place-items:center;font-size:21px}
+
+.merchant{min-width:0}
+
+.merchant strong{font-size:14px}
+
+.merchant small{display:block;color:var(--muted);margin-top:5px;font-size:12px}
+
+.amount{margin-left:auto;font-weight:750;white-space:nowrap}
+
+/* Updated bottom navigation */
+
+.bottom-nav{
+
+  position:fixed;
+
+  z-index:20;
+
+  left:13px;
+
+  right:13px;
+
+  bottom:calc(env(safe-area-inset-bottom) + 12px);
+
+  max-width:820px;
+
+  height:66px;
+
+  margin:auto;
+
+  padding:4px 6px;
+
+  display:grid;
+
+  grid-template-columns:repeat(5,minmax(0,1fr));
+
+  align-items:center;
+
+  background:rgba(255,255,255,.94);
+
+  border:1px solid white;
+
+  border-radius:50px;
+
+  box-shadow:0 7px 30px rgba(29,20,37,.16);
+
+  backdrop-filter:blur(18px);
+
+  -webkit-backdrop-filter:blur(18px);
+
+}
+
+.nav-item{
+
+  width:100%;
+
+  height:58px;
+
+  min-width:0;
+
+  padding:4px 1px;
+
+  border:0;
+
+  border-radius:40px;
+
+  background:transparent;
+
+  color:#55515a;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:3px;
+
+  font-size:12px;
+
+  font-weight:650;
+
+}
+
+.nav-icon{
+
+  width:27px;
+
+  height:27px;
+
+  flex:0 0 27px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+}
+
+.nav-icon svg{
+
+  width:25px;
+
+  height:25px;
+
+  display:block;
+
+  flex:0 0 25px;
+
+}
+
+.nav-item.active{
+
+  background:#eeeaf4;
+
+  color:var(--purple);
+
+}
+
+.nav-item.active .nav-icon svg{
+
+  fill:var(--purple);
+
+  stroke:var(--purple);
+
+}
+
+.nav-item:not(.active) .nav-icon svg{
+
+  fill:none;
+
+  stroke:currentColor;
+
+}
+
+.nav-item span:last-child{
+
+  line-height:1.2;
+
+  white-space:nowrap;
+
+}
+
+footer{padding:15px 20px 110px;text-align:center;font-size:10px;color:var(--muted);line-height:1.5}
+
+.toast{position:fixed;z-index:1200;bottom:105px;left:50%;transform:translateX(-50%);background:#30203b;color:white;padding:12px 18px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;width:max-content;max-width:90%}
+
+.toast.show{opacity:1}
+
+.editor-backdrop{position:fixed;inset:0;z-index:1100;background:#170d20a8;display:none;align-items:center;justify-content:center;padding:16px}
+
+.editor-backdrop.open{display:flex}
+
+.editor{width:min(100%,460px);max-height:90%;overflow:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 20px 60px #0004}
+
+.editor h2{font-size:21px;margin:0 0 6px;color:var(--deep)}
+
+.editor-intro{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 17px}
+
+.editor h3{font-size:15px;margin:18px 0 10px}
+
+.editor label{display:block;font-size:12px;color:#5f5966;margin:10px 0 5px}
+
+.editor input{width:100%;height:43px;border:1px solid #dcd6e3;border-radius:9px;padding:0 11px;font:16px inherit;color:var(--ink);background:white}
+
+.editor-actions{display:flex;gap:10px;margin-top:20px}
+
+.editor-actions button{flex:1;border-radius:10px;padding:12px;border:1px solid #d9d2e0;background:white;color:var(--purple);font-weight:650}
+
+.editor-actions .save{background:var(--purple);border-color:var(--purple);color:white}
+
+.editor-account{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+
+.editor-account-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+.editor-account-heading h3{margin:0}
+
+.delete-account{border:1px solid #e3dce8;border-radius:8px;background:#fff;color:#7c2745;padding:7px 10px;font-size:12px}
+
+.add-demo-account{width:100%;margin-top:15px;padding:11px;border:1px dashed var(--purple);border-radius:10px;background:#fff;color:var(--purple);font-weight:650}
+
+/* Notification centre — fictional prototype interactions */
+
+.notification-backdrop{position:fixed;inset:0;z-index:1050;background:rgba(20,12,29,.48);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s ease}
+
+.notification-backdrop.open{opacity:1;visibility:visible}
+
+.notification-panel{position:fixed;z-index:1060;right:0;top:0;bottom:0;width:min(100%,480px);background:#f8f7fa;box-shadow:-15px 0 45px #160d2530;transform:translateX(105%);transition:transform .28s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+.notification-panel.open{transform:translateX(0)}
+
+.notification-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;background:#fff;border-bottom:1px solid var(--line)}
+
+.notification-head h2{font-size:22px;margin:0;color:var(--deep)}
+
+.notification-head p{font-size:12px;color:var(--muted);margin:5px 0 0}
+
+.notification-close{width:38px;height:38px;border:0;border-radius:50%;background:#f1eef4;color:var(--deep);font-size:24px;line-height:1}
+
+.notification-tools{padding:14px 16px 10px;background:#fff}
+
+.notification-search{width:100%;height:43px;border:1px solid #e2dce8;border-radius:12px;background:#f8f7fa;padding:0 13px;font:14px inherit;color:var(--ink);outline:none}
+
+.notification-search:focus{border-color:#9563bd;box-shadow:0 0 0 3px #9563bd20}
+
+.notification-tabs{display:flex;gap:8px;overflow-x:auto;padding:13px 0 2px;scrollbar-width:none}
+
+.notification-tabs::-webkit-scrollbar{display:none}
+
+.notification-tab{flex:0 0 auto;border:1px solid #e4dfe9;border-radius:20px;background:#fff;color:#625b69;padding:8px 13px;font-size:12px;font-weight:650}
+
+.notification-tab.active{background:var(--purple);border-color:var(--purple);color:#fff}
+
+.notification-actions{display:flex;justify-content:flex-end;padding:9px 17px;background:#fff}
+
+.mark-all-read{border:0;background:none;color:var(--purple);font-size:12px;font-weight:700;padding:5px}
+
+.notification-list{overflow-y:auto;padding:8px 13px 25px;flex:1}
+
+.notification-item{width:100%;display:flex;align-items:flex-start;gap:12px;text-align:left;padding:15px 13px;margin:0 0 9px;border:1px solid #eeeaf1;border-radius:15px;background:#fff;color:var(--ink);box-shadow:0 3px 12px #21133308}
+
+.notification-item.unread{background:#fff;border-color:#d9c9e8}
+
+.notification-icon{width:39px;height:39px;flex:0 0 39px;border-radius:13px;display:grid;place-items:center;background:#f0eaf6;color:var(--purple);font-size:19px}
+
+.notification-copy{min-width:0;flex:1}
+
+.notification-copy strong{display:block;font-size:13px;line-height:1.35}
+
+.notification-copy p{font-size:12px;line-height:1.45;color:#77717d;margin:5px 0 7px}
+
+.notification-copy small{font-size:10px;color:#918b97}
+
+.notification-unread-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#3479e8;margin-top:5px}
+
+.notification-empty{text-align:center;color:var(--muted);font-size:13px;padding:35px 15px}
+
+.notification-detail{display:none;position:absolute;inset:0;background:#f8f7fa;z-index:2;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+.notification-detail.open{display:flex}
+
+.notification-detail-head{display:flex;align-items:center;gap:12px;padding:18px;background:#fff;border-bottom:1px solid var(--line)}
+
+.notification-back{border:0;background:none;color:var(--purple);font-size:25px;padding:0 5px}
+
+.notification-detail-body{padding:24px 21px;overflow:auto}
+
+.notification-detail-icon{width:52px;height:52px;border-radius:16px;background:#f0eaf6;display:grid;place-items:center;font-size:25px;margin-bottom:18px}
+
+.notification-detail-body h3{font-size:20px;line-height:1.3;margin:0 0 8px;color:var(--deep)}
+
+.notification-detail-date{font-size:11px;color:var(--muted);margin-bottom:20px}
+
+.notification-detail-message{font-size:14px;line-height:1.65;color:#514b58}
+
+.notification-detail-note{margin-top:24px;padding:12px;border-radius:11px;background:#eeeaf4;color:#675d70;font-size:11px;line-height:1.5}
+
+@media(max-width:600px){
+
+  .notification-panel{top:auto;left:0;right:0;bottom:0;width:100%;height:min(88dvh,760px);border-radius:22px 22px 0 0;transform:translateY(105%);padding-bottom:env(safe-area-inset-bottom)}
+
+  .notification-panel.open{transform:translateY(0)}
+
+  .notification-head{border-radius:22px 22px 0 0}
+
+}
+
+@media(min-width:700px){main{padding-top:30px}.account-primary{min-height:190px}}
+
+@media(max-width:370px){main{padding-left:12px;padding-right:12px}.account-primary,.account-secondary{padding-left:16px;padding-right:16px}.secondary-name{font-size:16px}.secondary-balance{font-size:18px}}
+
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+</style>
+
+</head>
+
+<body>
+
+<section class="intro" id="intro">
+
+  <div class="intro-top">
+
+    <div class="intro-face">
+
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+
+        <path class="face-outline" d="M15 7H9v8M33 7h6v8M9 33v8h6M39 33v8h-6M17 19c1.5-2 4-3 7-3s5.5 1 7 3M17 27c1.5 3 4 5 7 5s5.5-2 7-5"/>
+
+        <path class="face-check" d="M15 25l6 6 13-14"/>
+
+      </svg>
+
+    </div>
+
+    <div class="intro-caption">Verifying device · visual demo only</div>
+
+  </div>
+
+  <div class="intro-spinner"></div>
+
+  <div class="intro-brand">
+
+    <div class="intro-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+
+    <strong>NatWest</strong>
+
+    <small>FICTIONAL PROTOTYPE</small>
+
+  </div>
+
+  <div class="intro-foot">No camera access · No real identity or bank verification</div>
+
+</section>
+
+<div class="demo-banner"><strong>Prototype only</strong> · Fictional sample account information — not connected to NatWest or any real bank.</div>
+
+<header class="header">
+
+  <div class="app-logo"><img src="apple-touch-icon.png" alt="Demo app logo"></div>
+
+  <div class="header-actions">
+
+    <button type="button" class="notification" id="open-notifications" data-count="5" aria-label="Open notifications">♧</button>
+
+    <button data-message="Search is not connected in this demo." aria-label="Search">⌕</button>
+
+  </div>
+
+</header>
+
+<div class="notification-backdrop" id="notification-backdrop"></div>
+
+<aside class="notification-panel" id="notification-panel" aria-label="Demo notifications" aria-hidden="true">
+
+  <div class="notification-head">
+
+    <div><h2>Notifications</h2><p id="notification-summary">5 unread notifications</p></div>
+
+    <button type="button" class="notification-close" id="close-notifications" aria-label="Close notifications">×</button>
+
+  </div>
+
+  <div class="notification-tools">
+
+    <input class="notification-search" id="notification-search" type="search" placeholder="Search notifications" aria-label="Search notifications">
+
+    <div class="notification-tabs" id="notification-tabs" aria-label="Filter notifications">
+
+      <button type="button" class="notification-tab active" data-filter="All">All</button>
+
+      <button type="button" class="notification-tab" data-filter="Unread">Unread</button>
+
+      <button type="button" class="notification-tab" data-filter="Payments">Payments</button>
+
+      <button type="button" class="notification-tab" data-filter="Cards">Cards</button>
+
+      <button type="button" class="notification-tab" data-filter="Security">Security</button>
+
+      <button type="button" class="notification-tab" data-filter="Statements">Statements</button>
+
+      <button type="button" class="notification-tab" data-filter="Account">Account</button>
+
+    </div>
+
+  </div>
+
+  <div class="notification-actions"><button type="button" class="mark-all-read" id="mark-all-read">Mark all as read</button></div>
+
+  <div class="notification-list" id="notification-list" aria-live="polite"></div>
+
+  <section class="notification-detail" id="notification-detail" aria-label="Notification details">
+
+    <div class="notification-detail-head">
+
+      <button type="button" class="notification-back" id="notification-detail-back" aria-label="Back to notifications">‹</button>
+
+      <strong>Notification details</strong>
+
+    </div>
+
+    <div class="notification-detail-body" id="notification-detail-body"></div>
+
+  </section>
+
+</aside>
+
+<main>
+
+  <div class="section-label"><span id="dashboard-greeting">Good morning, Jamie</span></div>
+
+  <section class="account-card">
+
+    <div class="account-primary">
+
+      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+
+      <div class="account-name" id="account-name-1">DEMO ACCOUNT</div>
+
+      <div class="account-number" id="account-details-1">Select Account · Sample number · 00-00-00</div>
+
+      <div class="account-visual">
+
+        <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+
+          <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
+          <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+
+          <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
+          <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+
+          <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+
+          <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+
+        </svg>
+
+        <div class="primary-balance" id="account-balance-1">£0.53</div>
+
+      </div>
+
+    </div>
+
+    <div class="account-secondary">
+
+      <div>
+
+        <div class="secondary-name" id="account-name-2">Sample Current Account</div>
+
+        <div class="secondary-type" id="account-details-2">Fictional sample account</div>
+
+      </div>
+
+      <div>
+
+        <div class="secondary-balance" id="account-balance-2">£58.44</div>
+
+        <div class="available">Sample available balance</div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <button class="add-account" data-message="Adding accounts is not available in this demo." style="width:100%;border:0;text-align:left;color:inherit">
+
+    <span class="bank-stack"><img src="bank-logo-stack.png" alt="Halifax, Barclays and RBS logos"></span>
+
+    <span><span class="add-text">Add another account</span><span class="add-sub" style="display:block">Bank accounts &amp; mortgages</span></span>
+
+    <span class="more">•••</span>
+
+  </button>
+
+  <div class="pots-heading">Pots <span class="new-tag">New</span></div>
+
+  <button class="create-pot" data-message="Creating pots is disabled in this demo.">
+
+    <span class="plus">＋</span>
+
+    <span><span class="create-title">Create a pot</span><span class="create-sub" style="display:block">Separate money from your main account</span></span>
+
+  </button>
+
+  <div class="section-label widgets-heading">
+
+    <span>Widgets</span>
+
+    <button class="plain-button" data-message="Widget editing is disabled in this demo.">Edit　›</button>
+
+  </div>
+
+  <section class="widget-grid">
+
+    <article class="widget">
+
+      <div class="widget-title">Credit score</div><div class="widget-icon">◉</div>
+
+      <div class="widget-value">—</div><div class="widget-caption">Sample widget</div>
+
+    </article>
+
+    <article class="widget">
+
+      <div class="widget-title">Weekly spend</div><div class="widget-icon">▥</div>
+
+      <div class="widget-value">£19.42</div><div class="widget-caption">Fictional sample data</div>
+
+    </article>
+
+  </section>
+
+  <section class="transactions">
+
+    <h2>Recent transactions</h2>
+
+    <article class="transaction">
+
+      <div class="merchant-icon">☕</div>
+
+      <div class="merchant"><strong>COFFEE HOUSE</strong><small>Today · 09:14 · Sample card</small></div>
+
+      <div class="amount">−£4.60</div>
+
+    </article>
+
+    <article class="transaction">
+
+      <div class="merchant-icon">🛒</div>
+
+      <div class="merchant"><strong>GROCERY MARKET</strong><small>Yesterday · Sample card</small></div>
+
+      <div class="amount">−£18.25</div>
+
+    </article>
+
+  </section>
+
+</main>
+
+<nav class="bottom-nav" aria-label="Demo navigation">
+
+  <button class="nav-item active" data-message="You are viewing the demo home screen.">
+
+    <span class="nav-icon">
+
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H14v-7h-4v7H3z"/></svg>
+
+    </span><span>Home</span>
+
+  </button>
+
+  <button class="nav-item" data-message="Help is not connected in this demo.">
+
+    <span class="nav-icon">
+
+      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+        <path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9 9 0 0 1-4-.9L3 21l1.8-4.3A8 8 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/>
+
+        <path d="M9.7 9a2.4 2.4 0 1 1 4.3 1.5c-1 1.1-2 1.4-2 3"/><path d="M12 17h.01"/>
+
+      </svg>
+
+    </span><span>Help</span>
+
+  </button>
+
+  <button class="nav-item" data-message="Payments are disabled in this demo.">
+
+    <span class="nav-icon">
+
+      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h17m-4-4 4 4-4 4"/><path d="M21 16H4m4-4-4 4 4 4"/></svg>
+
+    </span><span>Payments</span>
+
+  </button>
+
+  <button class="nav-item" data-message="Insights use fictional sample data.">
+
+    <span class="nav-icon">
+
+      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+        <path d="M4 20V13h4v7M10 20V8h4v12M16 20V3h4v17"/>
+
+      </svg>
+
+    </span><span>Insights</span>
+
+  </button>
+
+  <button class="nav-item" data-message="Applications are disabled in this demo.">
+
+    <span class="nav-icon">
+
+      <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+        <rect x="3" y="3" width="13" height="16" rx="1.5"/>
+
+        <path d="M8 7h4M8 11h4M8 21h13V8l-5-5M16 3v5h5"/>
+
+      </svg>
+
+    </span><span>Apply</span>
+
+  </button>
+
+</nav>
+
+<footer>Fictional visual prototype only. Not an official NatWest service. No real accounts, authentication, payments or banking services are connected.</footer>
+
+<div class="toast" role="status" aria-live="polite"></div>
+
+<div class="editor-backdrop" id="account-editor">
+
+  <section class="editor" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+
+    <h2 id="editor-title">Edit sample accounts</h2>
+
+    <p class="editor-intro">Changes are stored only in this demo. Use fictional sample details only.</p>
+
+    <h3>Dashboard greeting</h3>
+
+    <label for="edit-dashboard-name">Name shown after ‘Good morning’</label>
+
+    <input id="edit-dashboard-name" maxlength="40" value="Jamie">
+
+    <div id="editor-accounts"></div>
+
+    <button type="button" class="add-demo-account" id="add-demo-account">＋ Add demo account</button>
+
+    <div class="editor-actions">
+
+      <button type="button" id="cancel-edit">Cancel</button>
+
+      <button type="button" class="save" id="save-edit">Save changes</button>
+
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+
+const intro=document.getElementById("intro");
+
+window.setTimeout(()=>intro.classList.add("hide"),3400);
+
+window.setTimeout(()=>intro.remove(),4200);
+
+const toast=document.querySelector(".toast");
+
+let toastTimer;
+
+function showToast(message){
+
+  toast.textContent=message;
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=window.setTimeout(()=>toast.classList.remove("show"),2600);
+
+}
+
+document.querySelectorAll('[data-message]:not(.notification)').forEach(button=>{
+
+  button.addEventListener("click",()=>showToast(button.dataset.message));
+
+});
+
+document.querySelectorAll(".nav-item").forEach(item=>{
+
+  item.addEventListener("click",()=>{
+
+    document.querySelectorAll(".nav-item").forEach(nav=>nav.classList.remove("active"));
+
+    item.classList.add("active");
+
+  });
+
+});
+
+/* Fictional demo notification data */
+
+const notifications=[
+
+  {id:1,category:"Payments",icon:"↗",title:"Payment received",preview:"A sample payment has been added to your demo account.",message:"This is a fictional incoming payment notification for the prototype. No real payment has taken place.",date:"Today · 09:42",unread:true},
+
+  {id:2,category:"Cards",icon:"▣",title:"Card payment",preview:"A sample card payment was made.",message:"This is a fictional card transaction notification. It does not represent a real purchase or bank transaction.",date:"Today · 08:30",unread:true},
+
+  {id:3,category:"Security",icon:"⌑",title:"Security reminder",preview:"Remember to keep your sign-in details private.",message:"Never share passwords, PINs or one-time passcodes. This is a general demo reminder and is not a real security alert.",date:"Yesterday · 18:20",unread:true},
+
+  {id:4,category:"Account",icon:"◉",title:"Account overview updated",preview:"Your sample account overview is ready to view.",message:"The dashboard displays fictional sample account information. No real account has been updated.",date:"Yesterday · 14:15",unread:true},
+
+  {id:5,category:"Statements",icon:"▤",title:"Sample statement available",preview:"Your fictional monthly statement is ready.",message:"This is a demonstration notification. No actual bank statement has been generated.",date:"Yesterday · 09:10",unread:true},
+
+  {id:6,category:"Payments",icon:"↙",title:"Standing order reminder",preview:"A sample standing order reminder.",message:"This is an example reminder for the fictional prototype. No standing order is scheduled.",date:"12 Nov · 11:20",unread:false},
+
+  {id:7,category:"Cards",icon:"▣",title:"Card settings",preview:"Review your fictional card settings.",message:"This sample notification demonstrates a card settings update. No real card settings have changed.",date:"11 Nov · 16:40",unread:false},
+
+  {id:8,category:"Security",icon:"⌑",title:"Online safety tips",preview:"A few reminders to help protect your information.",message:"Use strong, unique passwords and never share one-time passcodes. This is general educational information.",date:"10 Nov · 10:05",unread:false},
+
+  {id:9,category:"Account",icon:"◉",title:"Profile details",preview:"Your demo profile details can be reviewed.",message:"This is a fictional profile reminder. It does not refer to a real bank profile.",date:"9 Nov · 15:30",unread:false},
+
+  {id:10,category:"Statements",icon:"▤",title:"Monthly summary",preview:"Your sample monthly summary is ready.",message:"This is a fictional monthly summary notification for the dashboard demonstration.",date:"8 Nov · 09:00",unread:false},
+
+  {id:11,category:"Payments",icon:"↗",title:"Payment scheduled",preview:"A sample payment reminder.",message:"This is only a demonstration. No real payment has been scheduled.",date:"7 Nov · 12:10",unread:false},
+
+  {id:12,category:"Cards",icon:"▣",title:"Contactless payments",preview:"Learn about contactless payment safety.",message:"This notification contains general information for the fictional prototype.",date:"6 Nov · 13:45",unread:false},
+
+  {id:13,category:"Security",icon:"⌑",title:"Device safety",preview:"Keep your device software up to date.",message:"Install operating system and app updates to help protect your device. This is not a real security alert.",date:"5 Nov · 08:15",unread:false},
+
+  {id:14,category:"Account",icon:"◉",title:"Account information",preview:"Your sample account information is available.",message:"All account details in this prototype are fictional and editable locally.",date:"4 Nov · 17:25",unread:false},
+
+  {id:15,category:"Statements",icon:"▤",title:"Statement reminder",preview:"A sample statement reminder.",message:"This is a fictional reminder. No real statement is available through this prototype.",date:"3 Nov · 10:40",unread:false},
+
+  {id:16,category:"Payments",icon:"↙",title:"Payment confirmation",preview:"Example payment confirmation.",message:"This is not a real payment confirmation. It is sample content for the notification centre.",date:"2 Nov · 14:05",unread:false},
+
+  {id:17,category:"Cards",icon:"▣",title:"Card usage reminder",preview:"Review your sample card activity.",message:"The card activity shown in this prototype is fictional and is not linked to a payment card.",date:"1 Nov · 11:30",unread:false},
+
+  {id:18,category:"Security",icon:"⌑",title:"Privacy reminder",preview:"Review your privacy settings regularly.",message:"This is a general privacy reminder for the demo.",date:"31 Oct · 09:20",unread:false},
+
+  {id:19,category:"Account",icon:"◉",title:"Personal details",preview:"Your demo personal details are available.",message:"This is a sample account notification. No personal details have been submitted or verified.",date:"30 Oct · 16:10",unread:false},
+
+  {id:20,category:"Statements",icon:"▤",title:"Previous statement",preview:"A sample previous statement reminder.",message:"No real statement is attached to this fictional notification.",date:"29 Oct · 10:15",unread:false},
+
+  {id:21,category:"Payments",icon:"↗",title:"Payment activity",preview:"View your sample payment activity.",message:"The payment activity in this prototype is fictional.",date:"28 Oct · 13:00",unread:false},
+
+  {id:22,category:"Cards",icon:"▣",title:"Card information",preview:"Sample card information reminder.",message:"This is a fictional card notification and is not connected to a real card.",date:"27 Oct · 12:35",unread:false},
+
+  {id:23,category:"Security",icon:"⌑",title:"Keep your account safe",preview:"Never share your password or PIN.",message:"This is general security advice. The prototype does not perform real authentication.",date:"26 Oct · 08:50",unread:false},
+
+  {id:24,category:"Account",icon:"◉",title:"Account overview",preview:"Your demo overview is ready.",message:"This notification is included as sample content in the fictional dashboard.",date:"25 Oct · 15:40",unread:false},
+
+  {id:25,category:"Statements",icon:"▤",title:"Statement information",preview:"Example statement information.",message:"This is a sample notification only. It does not contain a real bank statement.",date:"24 Oct · 09:30",unread:false}
+
+];
+
+const notificationPanel=document.getElementById("notification-panel");
+
+const notificationBackdrop=document.getElementById("notification-backdrop");
+
+const notificationButton=document.getElementById("open-notifications");
+
+const notificationList=document.getElementById("notification-list");
+
+const notificationSearch=document.getElementById("notification-search");
+
+const notificationSummary=document.getElementById("notification-summary");
+
+const notificationDetail=document.getElementById("notification-detail");
+
+const notificationDetailBody=document.getElementById("notification-detail-body");
+
+let activeNotificationFilter="All";
+
+function unreadNotificationCount(){
+
+  return notifications.filter(item=>item.unread).length;
+
+}
+
+function updateNotificationCount(){
+
+  const count=unreadNotificationCount();
+
+  notificationButton.dataset.count=String(count);
+
+  notificationSummary.textContent=count===1?"1 unread notification":`${count} unread notifications`;
+
+}
+
+function openNotifications(){
+
+  notificationPanel.classList.add("open");
+
+  notificationBackdrop.classList.add("open");
+
+  notificationPanel.setAttribute("aria-hidden","false");
+
+  document.body.style.overflow="hidden";
+
+  renderNotifications();
+
+}
+
+function closeNotifications(){
+
+  notificationPanel.classList.remove("open");
+
+  notificationBackdrop.classList.remove("open");
+
+  notificationPanel.setAttribute("aria-hidden","true");
+
+  notificationDetail.classList.remove("open");
+
+  document.body.style.overflow="";
+
+}
+
+function renderNotifications(){
+
+  const search=notificationSearch.value.trim().toLowerCase();
+
+  const filtered=notifications.filter(item=>{
+
+    const matchesFilter=
+
+      activeNotificationFilter==="All"||
+
+      (activeNotificationFilter==="Unread"&&item.unread)||
+
+      item.category===activeNotificationFilter;
+
+    const matchesSearch=
+
+      !search||
+
+      item.title.toLowerCase().includes(search)||
+
+      item.preview.toLowerCase().includes(search)||
+
+      item.category.toLowerCase().includes(search)||
+
+      item.message.toLowerCase().includes(search);
+
+    return matchesFilter&&matchesSearch;
+
+  });
+
+  notificationList.innerHTML="";
+
+  if(filtered.length===0){
+
+    notificationList.innerHTML='<div class="notification-empty">No notifications found.</div>';
+
+    updateNotificationCount();
+
+    return;
+
+  }
+
+  filtered.forEach(item=>{
+
+    const button=document.createElement("button");
+
+    button.type="button";
+
+    button.className=`notification-item${item.unread?" unread":""}`;
+
+    button.innerHTML=`
+
+      <span class="notification-icon">${item.icon}</span>
+
+      <span class="notification-copy">
+
+        <strong>${escapeHTML(item.title)}</strong>
+
+        <p>${escapeHTML(item.preview)}</p>
+
+        <small>${escapeHTML(item.date)} · ${escapeHTML(item.category)}</small>
+
+      </span>
+
+      ${item.unread?'<span class="notification-unread-dot" aria-label="Unread"></span>':""}
+
+    `;
+
+    button.addEventListener("click",()=>openNotificationDetail(item.id));
+
+    notificationList.appendChild(button);
+
+  });
+
+  updateNotificationCount();
+
+}
+
+function openNotificationDetail(id){
+
+  const item=notifications.find(notification=>notification.id===id);
+
+  if(!item)return;
+
+  item.unread=false;
+
+  notificationDetailBody.innerHTML=`
+
+    <div class="notification-detail-icon">${item.icon}</div>
+
+    <h3>${escapeHTML(item.title)}</h3>
+
+    <div class="notification-detail-date">${escapeHTML(item.date)} · ${escapeHTML(item.category)}</div>
+
+    <div class="notification-detail-message">${escapeHTML(item.message)}</div>
+
+    <div class="notification-detail-note">Fictional demonstration notification. This prototype is not connected to a real bank or account.</div>
+
+  `;
+
+  notificationDetail.classList.add("open");
+
+  renderNotifications();
+
+}
+
+document.getElementById("notification-detail-back").addEventListener("click",()=>{
+
+  notificationDetail.classList.remove("open");
+
+});
+
+document.getElementById("open-notifications").addEventListener("click",openNotifications);
+
+document.getElementById("close-notifications").addEventListener("click",closeNotifications);
+
+notificationBackdrop.addEventListener("click",closeNotifications);
+
+notificationSearch.addEventListener("input",renderNotifications);
+
+document.getElementById("notification-tabs").addEventListener("click",event=>{
+
+  const button=event.target.closest("[data-filter]");
+
+  if(!button)return;
+
+  activeNotificationFilter=button.dataset.filter;
+
+  document.querySelectorAll(".notification-tab").forEach(tab=>{
+
+    tab.classList.toggle("active",tab===button);
+
+  });
+
+  renderNotifications();
+
+});
+
+document.getElementById("mark-all-read").addEventListener("click",()=>{
+
+  notifications.forEach(item=>item.unread=false);
+
+  renderNotifications();
+
+  showToast("All demo notifications marked as read.");
+
+});
+
+document.addEventListener("keydown",event=>{
+
+  if(event.key==="Escape"&&notificationPanel.classList.contains("open")){
+
+    closeNotifications();
+
+  }
+
+});
+
+updateNotificationCount();
+
+/* Original navigation and account editor code continues below */
+
+let dashboardName="Jamie";
+
+const accounts=[
+
+  {name:"DEMO ACCOUNT",sort:"00-00-00",number:"00000000",balance:"0.53"},
+
+  {name:"Sample Current Account",sort:"00-00-00",number:"00000000",balance:"58.44"}
+
+];
+
+const editor=document.getElementById("account-editor");
+
+const editorAccounts=document.getElementById("editor-accounts");
+
+let holdTimer=null;
+
+let editorOpened=false;
+
+function escapeHTML(value){
+
+  return String(value).replace(/[&<>"']/g,char=>({
+
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+
+  })[char]);
+
+}
+
+function formatSortCode(value){
+
+  const digits=String(value).replace(/\D/g,"").slice(0,6);
+
+  return digits.replace(/(\d{2})(?=\d)/g,"$1-");
+
+}
+
+function parseBalance(value){
+
+  const cleaned=String(value).trim().replace(/[£\s]/g,"");
+
+  if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{1,2})?$/.test(cleaned))return null;
+
+  const amount=Number(cleaned.replace(/,/g,""));
+
+  return Number.isFinite(amount)?amount.toFixed(2):null;
+
+}
+
+function formatBalance(value){
+
+  return "£"+Number(value).toLocaleString("en-GB",{
+
+    minimumFractionDigits:2,
+
+    maximumFractionDigits:2
+
+  });
+
+}
+
+function renderAccounts(){
+
+  const card=document.querySelector(".account-card");
+
+  const first=accounts[0];
+
+  const walletMarkup=`
+
+    <svg class="wallet-art" viewBox="0 0 140 110" aria-label="Wallet illustration" role="img">
+
+      <path d="M20 38 L100 25 Q108 24 111 34 L121 83 Q123 91 114 94 L31 107 Q20 108 18 98 L9 53 Q7 42 20 38Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
+      <path d="M17 39 L95 25 Q104 22 106 30 L108 35 L23 49Z" fill="#783bd1"/>
+
+      <path d="M83 52 L120 45 Q127 44 129 52 L133 72 Q134 79 126 81 L90 87 Q84 88 82 81 L78 61 Q77 54 83 52Z" fill="white" stroke="#4a087f" stroke-width="2"/>
+
+      <circle cx="94" cy="67" r="5" fill="#783bd1"/>
+
+      <path d="M24 101 L113 88" stroke="#4a087f" stroke-width="1.5"/>
+
+      <path d="M79 12 L75 2 M91 9 L94 0 M103 13 L111 6" stroke="#a879e8" stroke-width="4" stroke-linecap="round"/>
+
+    </svg>`;
+
+  card.innerHTML=`
+
+    <div class="account-primary">
+
+      <button class="account-menu" data-message="Sample account options only." aria-label="Account options">•••</button>
+
+      <div class="account-name">${escapeHTML(first.name)}</div>
+
+      <div class="account-number">Select Account · ${escapeHTML(formatSortCode(first.sort))} · ${escapeHTML(first.number)}</div>
+
+      <div class="account-visual">
+
+        ${walletMarkup}
+
+        <div class="primary-balance">${formatBalance(first.balance)}</div>
+
+      </div>
+
+    </div>
+
+    ${accounts.slice(1).map(account=>`
+
+      <div class="account-secondary">
+
+        <div>
+
+          <div class="secondary-name">${escapeHTML(account.name)}</div>
+
+          <div class="secondary-type">${escapeHTML(formatSortCode(account.sort))} · ${escapeHTML(account.number)}</div>
+
+        </div>
+
+        <div>
+
+          <div class="secondary-balance">${formatBalance(account.balance)}</div>
+
+          <div class="available">Sample available balance</div>
+
+        </div>
+
+      </div>`).join("")}`;
+
+  card.querySelector(".account-menu").addEventListener("click",()=>showToast("Sample account options only."));
+
+  attachWalletHold();
+
+}
+
+function renderEditorAccounts(){
+
+  editorAccounts.innerHTML=accounts.map((account,index)=>`
+
+    <div class="editor-account" data-index="${index}">
+
+      <div class="editor-account-heading">
+
+        <h3>Demo account ${index+1}</h3>
+
+        <button type="button" class="delete-account" data-delete-account="${index}">Delete</button>
+
+      </div>
+
+      <label for="edit-name-${index}">Account name</label>
+
+      <input id="edit-name-${index}" data-field="name" maxlength="40" value="${escapeHTML(account.name)}">
+
+      <label for="edit-sort-${index}">Sort code</label>
+
+      <input id="edit-sort-${index}" data-field="sort" inputmode="numeric" maxlength="8" placeholder="00-00-00" value="${escapeHTML(formatSortCode(account.sort))}">
+
+      <label for="edit-number-${index}">Account number</label>
+
+      <input id="edit-number-${index}" data-field="number" inputmode="numeric" maxlength="8" value="${escapeHTML(account.number)}">
+
+      <label for="edit-balance-${index}">Displayed balance (£)</label>
+
+      <input id="edit-balance-${index}" data-field="balance" inputmode="decimal" placeholder="125,000.00" value="${escapeHTML(account.balance)}">
+
+    </div>`).join("");
+
+}
+
+function fillEditor(){
+
+  document.getElementById("edit-dashboard-name").value=dashboardName;
+
+  renderEditorAccounts();
+
+}
+
+function openAccountEditor(){
+
+  if(editorOpened)return;
+
+  editorOpened=true;
+
+  fillEditor();
+
+  editor.classList.add("open");
+
+}
+
+function startWalletHold(event){
+
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+
+  event.preventDefault();
+
+  clearTimeout(holdTimer);
+
+  editorOpened=false;
+
+  try{event.currentTarget.setPointerCapture(event.pointerId);}catch(error){}
+
+  holdTimer=window.setTimeout(()=>{
+
+    holdTimer=null;
+
+    openAccountEditor();
+
+  },3500);
+
+}
+
+function endWalletHold(){
+
+  if(holdTimer!==null){
+
+    clearTimeout(holdTimer);
+
+    holdTimer=null;
+
+  }
+
+}
+
+function attachWalletHold(){
+
+  const wallet=document.querySelector(".wallet-art");
+
+  if(!wallet)return;
+
+  wallet.addEventListener("pointerdown",startWalletHold);
+
+  wallet.addEventListener("pointerup",endWalletHold);
+
+  wallet.addEventListener("pointercancel",endWalletHold);
+
+  wallet.addEventListener("lostpointercapture",endWalletHold);
+
+  wallet.addEventListener("contextmenu",event=>event.preventDefault());
+
+}
+
+document.getElementById("add-demo-account").addEventListener("click",()=>{
+
+  accounts.push({name:"New demo account",sort:"00-00-00",number:"00000000",balance:"0.00"});
+
+  renderEditorAccounts();
+
+});
+
+editorAccounts.addEventListener("click",event=>{
+
+  const button=event.target.closest("[data-delete-account]");
+
+  if(!button)return;
+
+  if(accounts.length===1){
+
+    showToast("Keep at least one demo account.");
+
+    return;
+
+  }
+
+  accounts.splice(Number(button.dataset.deleteAccount),1);
+
+  renderEditorAccounts();
+
+});
+
+editorAccounts.addEventListener("input",event=>{
+
+  const field=event.target.dataset.field;
+
+  if(field==="sort"){
+
+    event.target.value=formatSortCode(event.target.value);
+
+  }else if(field==="number"){
+
+    event.target.value=event.target.value.replace(/\D/g,"").slice(0,8);
+
+  }
+
+});
+
+document.getElementById("save-edit").addEventListener("click",()=>{
+
+  const updated=[];
+
+  const rows=[...editorAccounts.querySelectorAll(".editor-account")];
+
+  for(let index=0;index<rows.length;index++){
+
+    const row=rows[index];
+
+    const value=field=>row.querySelector(`[data-field="${field}"]`).value.trim();
+
+    const name=value("name");
+
+    const sortDigits=value("sort").replace(/\D/g,"");
+
+    const number=value("number").replace(/\D/g,"");
+
+    const balance=parseBalance(value("balance"));
+
+    if(!name){
+
+      showToast(`Enter a name for demo account ${index+1}.`);
+
+      row.querySelector('[data-field="name"]').focus();
+
+      return;
+
+    }
+
+    if(sortDigits.length!==6){
+
+      showToast(`Enter a 6-digit sort code for demo account ${index+1}.`);
+
+      row.querySelector('[data-field="sort"]').focus();
+
+      return;
+
+    }
+
+    if(number.length!==8){
+
+      showToast(`Enter an 8-digit account number for demo account ${index+1}.`);
+
+      row.querySelector('[data-field="number"]').focus();
+
+      return;
+
+    }
+
+    if(balance===null){
+
+      showToast(`Enter a valid balance for demo account ${index+1}, e.g. 125,000.00.`);
+
+      row.querySelector('[data-field="balance"]').focus();
+
+      return;
+
+    }
+
+    updated.push({
+
+      name,
+
+      sort:formatSortCode(sortDigits),
+
+      number,
+
+      balance
+
+    });
+
+  }
+
+  dashboardName=document.getElementById("edit-dashboard-name").value.trim()||"Jamie";
+
+  accounts.splice(0,accounts.length,...updated);
+
+  document.getElementById("dashboard-greeting").textContent=`Good morning, ${dashboardName}`;
+
+  renderAccounts();
+
+  editor.classList.remove("open");
+
+  showToast("Sample account details updated.");
+
+});
+
+document.getElementById("cancel-edit").addEventListener("click",()=>{
+
+  editor.classList.remove("open");
+
+});
+
+editor.addEventListener("click",event=>{
+
+  if(event.target===editor)editor.classList.remove("open");
+
+});
+
+renderAccounts();
+
+</script>
+
+<script>
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+document.addEventListener('gesturechange', e => e.preventDefault(), {passive:false});
+document.addEventListener('gestureend', e => e.preventDefault(), {passive:false});
+
+let lastTouchEnd = 0;
+
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) e.preventDefault();
+  lastTouchEnd = now;
+}, {passive:false});
+</script>
+
+<style>
+#account-feature-menu {
+  position: fixed;
+  z-index: 99999;
+  width: min(340px, calc(100vw - 40px));
+  background: #fff;
+  border-radius: 28px;
+  padding: 14px;
+  box-shadow: 0 12px 45px rgba(30,20,50,.20);
+  display: none;
+  font-family: inherit;
+}
+
+#account-feature-menu.open { display: block; }
+
+#account-feature-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 0;
+  background: transparent;
+  padding: 19px 12px;
+  border-radius: 15px;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 600;
+  color: #17151d;
+  cursor: pointer;
+}
+
+#account-feature-menu button:active {
+  background: #f3eff8;
+}
+
+#account-feature-menu .menu-icon {
+  width: 34px;
+  font-size: 23px;
+  color: #30005b;
+  text-align: center;
+}
+
+#account-feature-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: #f3f1f8;
+  display: none;
+  overflow-y: auto;
+  font-family: inherit;
+  color: #24212a;
+}
+
+#account-feature-overlay.open { display: block; }
+
+#account-feature-overlay .feature-header {
+  background: white;
+  padding: 22px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+#account-feature-overlay .feature-back {
+  border: 0;
+  background: #f1edf7;
+  color: #39006b;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+#account-feature-overlay .feature-content {
+  padding: 28px 22px;
+}
+
+#account-feature-overlay .feature-card {
+  background: white;
+  border-radius: 20px;
+  padding: 23px;
+  margin-top: 18px;
+  box-shadow: 0 5px 20px rgba(30,20,50,.05);
+}
+
+#account-feature-overlay .feature-muted {
+  color: #77717f;
+  font-size: 14px;
+}
+</style>
+
+<div id="account-feature-menu">
+  <button data-feature="payments">
+    <span class="menu-icon">⇄</span>
+    Payments and transfers
+  </button>
+  <button data-feature="statements">
+    <span class="menu-icon">▤</span>
+    My statements
+  </button>
+  <button data-feature="cards">
+    <span class="menu-icon">▣</span>
+    Manage cards
+  </button>
+</div>
+
+<div id="account-feature-overlay">
+  <div class="feature-header">
+    <button class="feature-back" id="feature-back">‹</button>
+    <strong id="feature-title">Account</strong>
+  </div>
+  <div class="feature-content" id="feature-content"></div>
+</div>
+
+<script>
+(function () {
+  const menu = document.getElementById('account-feature-menu');
+  const overlay = document.getElementById('account-feature-overlay');
+  const title = document.getElementById('feature-title');
+  const content = document.getElementById('feature-content');
+
+  const pages = {
+    payments: {
+      title: 'Payments and transfers',
+      html: `
+        <h2>Payments and transfers</h2>
+        <p class="feature-muted">Demo account services</p>
+        <div class="feature-card">
+          <h3>Make a payment</h3>
+          <p class="feature-muted">Sample payment feature</p>
+        </div>
+        <div class="feature-card">
+          <h3>Transfer money</h3>
+          <p class="feature-muted">Sample transfer feature</p>
+        </div>
+        <div class="feature-card">
+          <h3>Payment history</h3>
+          <p class="feature-muted">Your sample transactions will appear here.</p>
+        </div>`
+    },
+    statements: {
+      title: 'My statements',
+      html: `
+        <h2>My statements</h2>
+        <p class="feature-muted">Sample account statements</p>
+        <div class="feature-card">
+          <h3>November 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>
+        <div class="feature-card">
+          <h3>October 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>
+        <div class="feature-card">
+          <h3>September 2026</h3>
+          <p class="feature-muted">Sample monthly statement</p>
+        </div>`
+    },
+    cards: {
+      title: 'Manage cards',
+      html: `
+        <h2>Manage cards</h2>
+        <p class="feature-muted">Sample card management</p>
+        <div class="feature-card">
+          <h3>Debit card</h3>
+          <p class="feature-muted">Demo card ending 1234</p>
+        </div>
+        <div class="feature-card">
+          <h3>Card settings</h3>
+          <p class="feature-muted">Sample card settings</p>
+        </div>`
+    }
+  };
+
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+
+  function openPage(key) {
+    const page = pages[key];
+    if (!page) return;
+
+    closeMenu();
+    title.textContent = page.title;
+    content.innerHTML = page.html;
+    overlay.classList.add('open');
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('click', function(event) {
+    const path = event.composedPath();
+    const dots = path.find(el =>
+      el instanceof HTMLElement &&
+      /^(⋯|…|•••|\.\.\.)$/.test(el.textContent.trim())
+    );
+
+    if (dots) {
+      const card = path.find(el =>
+        el instanceof HTMLElement &&
+        el.textContent &&
+        /DEMO ACCOUNT|Sample Current Account/i.test(el.textContent)
+      );
+
+      if (card) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        menu.classList.remove('open');
+        const rect = dots.getBoundingClientRect();
+
+        menu.style.top = Math.min(
+          rect.bottom + 10,
+          window.innerHeight - 250
+        ) + 'px';
+
+        menu.style.left = Math.max(
+          20,
+          Math.min(rect.left - 120, window.innerWidth - 360)
+        ) + 'px';
+
+        menu.classList.add('open');
+        return;
+      }
+    }
+
+    if (!menu.contains(event.target)) {
+      closeMenu();
+    }
+  }, true);
+
+  menu.addEventListener('click', function(event) {
+    const button = event.target.closest('[data-feature]');
+    if (button) openPage(button.dataset.feature);
+  });
+
+  document.getElementById('feature-back').addEventListener('click', function() {
+    overlay.classList.remove('open');
+  });
+})();
+</script>
+
+<script>
+(function() {
+  const icons = {
+    payments: `<svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 10h24l-6-6"/>
+      <path d="M27 10l-6 6"/>
+      <path d="M29 22H5l6-6"/>
+      <path d="M5 22l6 6"/>
+    </svg>`,
+
+    statements: `<svg viewBox="0 0 32 36" width="32" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M6 2h13l8 8v23H6z"/>
+      <path d="M19 2v9h8"/>
+      <text x="16" y="24" text-anchor="middle" fill="currentColor" stroke="none" font-size="7" font-weight="bold">PDF</text>
+    </svg>`,
+
+    cards: `<svg viewBox="0 0 34 30" width="34" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+      <rect x="2" y="4" width="30" height="22" rx="3"/>
+      <path d="M2 11h30"/>
+      <path d="M7 19h9"/>
+    </svg>`
+  };
+
+  document.querySelectorAll('#account-feature-menu [data-feature]').forEach(button => {
+    const icon = button.querySelector('.menu-icon');
+    const key = button.dataset.feature;
+
+    if (icon && icons[key]) {
+      icon.innerHTML = icons[key];
+      icon.style.display = 'flex';
+      icon.style.alignItems = 'center';
+      icon.style.justifyContent = 'center';
+      icon.style.color = '#39005f';
+    }
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const STORAGE_KEY = "fictionalDashboardSavedAccounts";
+
+  function readEditorData() {
+    const rows = [...document.querySelectorAll(".editor-account")];
+
+    return {
+      name: document.getElementById("edit-dashboard-name").value,
+      accounts: rows.map(row => ({
+        name: row.querySelector('[data-field="name"]').value,
+        sort: row.querySelector('[data-field="sort"]').value,
+        number: row.querySelector('[data-field="number"]').value,
+        balance: row.querySelector('[data-field="balance"]').value
+      }))
+    };
+  }
+
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(readEditorData()));
+    } catch (error) {
+      console.warn("Could not save demo account data.", error);
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("#save-edit")) {
+      setTimeout(saveData, 100);
+    }
+  });
+
+  function restoreData() {
+    let saved;
+
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    } catch (error) {
+      return;
+    }
+
+    if (!saved || !Array.isArray(saved.accounts) || !saved.accounts.length) return;
+
+    const wallet = document.querySelector(".wallet-art");
+    if (!wallet) return;
+
+    wallet.dispatchEvent(new PointerEvent("pointerdown", {
+      bubbles: true,
+      pointerType: "touch",
+      pointerId: 1
+    }));
+
+    setTimeout(function () {
+      wallet.dispatchEvent(new PointerEvent("pointerup", {
+        bubbles: true,
+        pointerType: "touch",
+        pointerId: 1
+      }));
+
+      setTimeout(function () {
+        const editor = document.getElementById("account-editor");
+        if (!editor.classList.contains("open")) return;
+
+        const addButton = document.getElementById("add-demo-account");
+
+        let rows = [...document.querySelectorAll(".editor-account")];
+
+        while (rows.length < saved.accounts.length) {
+          addButton.click();
+          rows = [...document.querySelectorAll(".editor-account")];
+        }
+
+        while (rows.length > saved.accounts.length) {
+          rows[rows.length - 1].querySelector("[data-delete-account]").click();
+          rows = [...document.querySelectorAll(".editor-account")];
+        }
+
+        document.getElementById("edit-dashboard-name").value =
+          saved.name || "Jamie";
+
+        saved.accounts.forEach(function (account, index) {
+          const row = rows[index];
+
+          Object.keys(account).forEach(function (field) {
+            const input = row.querySelector('[data-field="' + field + '"]');
+            if (input) input.value = account[field];
+          });
+        });
+
+        document.getElementById("save-edit").click();
+
+      }, 200);
+    }, 3600);
+  }
+
+  window.addEventListener("load", function () {
+    setTimeout(restoreData, 4500);
+  });
+})();
+</script>
+
+<script>
+(function () {
+  const links = [
+    ["Online Banking", "Secure online banking and login help", "https://www.natwest.com/ways-to-bank/online-banking.html", "🔐"],
+    ["Current Accounts", "Explore NatWest current accounts", "https://www.natwest.com/", "💳"],
+    ["Savings & ISAs", "Savings accounts and cash ISAs", "https://www.natwest.com/", "💰"],
+    ["Mortgages", "Mortgage information and support", "https://www.natwest.com/", "🏠"],
+    ["Credit Cards", "Explore credit cards", "https://www.natwest.com/", "💳"],
+    ["Loans & Overdrafts", "Personal borrowing information", "https://www.natwest.com/", "📄"],
+    ["Help & Support", "Get help with NatWest products", "https://www.natwest.com/support-centre.html", "💬"],
+    ["Contact NatWest", "Official contact details and assistance", "https://www.natwest.com/support-centre/contact-us.html", "☎️"],
+    ["Find a Branch", "Search for branches, ATMs and banking hubs", "https://www.natwest.com/search-results/locator.html", "📍"],
+    ["Security Centre", "Fraud prevention and security information", "https://www.natwest.com/", "🛡️"],
+    ["NatWest Homepage", "Visit the official NatWest website", "https://www.natwest.com/", "🌐"]
+  ];
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #demo-search-overlay {
+      position:fixed; inset:0; z-index:5000;
+      background:#f2f1f7; display:none;
+      flex-direction:column; overflow-y:auto;
+      padding:calc(env(safe-area-inset-top) + 18px) 18px 35px;
+      font-family:inherit;
+    }
+    #demo-search-overlay.open { display:flex; }
+    .ds-top {display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .ds-title {font-size:25px;font-weight:750;color:#292832}
+    #ds-close {border:0;background:white;border-radius:50%;width:42px;height:42px;font-size:24px;color:#4a087f}
+    .ds-search {display:flex;align-items:center;gap:10px;background:white;border:1px solid #e5e0eb;border-radius:16px;padding:0 15px;height:56px;box-shadow:0 5px 18px #2113330a}
+    .ds-search span {font-size:23px;color:#641bb0}
+    #ds-input {border:0;outline:0;background:transparent;width:100%;font:inherit;font-size:16px;color:#292832}
+    .ds-heading {font-size:14px;font-weight:700;color:#77737e;margin:25px 0 12px}
+    .ds-list {display:grid;gap:10px}
+    .ds-link {display:flex;align-items:center;gap:14px;padding:16px;background:white;border-radius:16px;text-decoration:none;color:#292832;box-shadow:0 4px 15px #21133308}
+    .ds-icon {width:44px;height:44px;border-radius:13px;background:#f1eaf8;display:grid;place-items:center;font-size:22px;flex-shrink:0}
+    .ds-copy {flex:1;min-width:0}
+    .ds-copy strong {display:block;font-size:15px}
+    .ds-copy small {display:block;color:#77737e;font-size:12px;margin-top:4px}
+    .ds-arrow {font-size:23px;color:#641bb0}
+    .ds-note {font-size:11px;color:#77737e;text-align:center;line-height:1.5;margin-top:22px}
+    .ds-empty {padding:25px;text-align:center;color:#77737e;background:white;border-radius:15px}
+  `;
+  document.head.appendChild(style);
+
+  const overlay = document.createElement("section");
+  overlay.id = "demo-search-overlay";
+  overlay.setAttribute("aria-label", "Website search and shortcuts");
+  overlay.innerHTML = `
+    <div class="ds-top">
+      <div class="ds-title">Explore</div>
+      <button id="ds-close" aria-label="Close">×</button>
+    </div>
+    <div class="ds-search">
+      <span>⌕</span>
+      <input id="ds-input" type="search" placeholder="Search services and pages..." autocomplete="off">
+    </div>
+    <div class="ds-heading">POPULAR DESTINATIONS</div>
+    <div class="ds-list" id="ds-list"></div>
+    <div class="ds-note">
+      External links open the official NatWest website.
+      This is a fictional demonstration and is not connected to NatWest.
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const list = overlay.querySelector("#ds-list");
+  const input = overlay.querySelector("#ds-input");
+
+  function render(query = "") {
+    const matches = links.filter(item =>
+      (item[0] + " " + item[1]).toLowerCase().includes(query.toLowerCase())
+    );
+
+    list.innerHTML = matches.length ? matches.map(item => `
+      <a class="ds-link" href="${item[2]}" target="_blank" rel="noopener noreferrer">
+        <span class="ds-icon">${item[3]}</span>
+        <span class="ds-copy">
+          <strong>${item[0]}</strong>
+          <small>${item[1]}</small>
+        </span>
+        <span class="ds-arrow">›</span>
+      </a>
+    `).join("") : `<div class="ds-empty">No matching pages found.</div>`;
+  }
+
+  function openSearch() {
+    overlay.classList.add("open");
+    input.value = "";
+    render();
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function closeSearch() {
+    overlay.classList.remove("open");
+  }
+
+  document.addEventListener("click", function(event) {
+    const searchButton = event.target.closest('button[aria-label="Search"]');
+    if (!searchButton) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openSearch();
+  }, true);
+
+  input.addEventListener("input", () => render(input.value));
+  overlay.querySelector("#ds-close").addEventListener("click", closeSearch);
+
+  overlay.addEventListener("click", event => {
+    if (event.target === overlay) closeSearch();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeSearch();
+  });
+
+  render();
+})();
+
+</script>
+
+<script>
+(function () {
+  // Disable browser zoom through the viewport settings.
+  let viewport = document.querySelector('meta[name="viewport"]');
+
+  if (!viewport) {
+    viewport = document.createElement("meta");
+    viewport.name = "viewport";
+    document.head.appendChild(viewport);
+  }
+
+  viewport.content =
+    "width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover";
+
+  // Stop pinch and gesture zoom on iPhone/iPad.
+  ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
+    document.addEventListener(type, event => {
+      event.preventDefault();
+    }, { passive: false, capture: true });
+  });
+
+  // Stop multi-finger zoom gestures.
+  document.addEventListener("touchmove", event => {
+    if (event.touches && event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  // Stop double-tap zoom.
+  let lastTouchEnd = 0;
+
+  document.addEventListener("touchend", event => {
+    const now = Date.now();
+
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+
+    lastTouchEnd = now;
+  }, { passive: false, capture: true });
+
+  // Stop Ctrl + mouse-wheel zoom.
+  document.addEventListener("wheel", event => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
+
+  // Prevent iPhone automatically zooming into small form fields.
+  const style = document.createElement("style");
+
+  style.textContent = `
+    input,
+    select,
+    textarea,
+    button {
+      font-size: 16px !important;
+    }
+
+    input,
+    select,
+    textarea {
+      touch-action: manipulation !important;
+    }
+
+    html,
+    body {
+      touch-action: pan-x pan-y;
+    }
+  `;
+
+  document.head.appendChild(style);
+})();
+
+</script>
+
+<script>
+(function () {
+  const css = document.createElement("style");
+  css.textContent = `
+    #account-options-overlay {
+      position:fixed;inset:0;z-index:6000;background:#0009;
+      display:none;align-items:flex-end;font-family:inherit;
+    }
+    #account-options-overlay.open{display:flex}
+    .ao-sheet {
+      width:100%;max-height:90dvh;overflow:auto;background:#f2f1f7;
+      border-radius:25px 25px 0 0;padding:15px 22px calc(30px + env(safe-area-inset-bottom));
+      animation:ao-up .25s ease;
+    }
+    @keyframes ao-up{from{transform:translateY(50px);opacity:.5}to{transform:none;opacity:1}}
+    .ao-handle{width:55px;height:6px;border-radius:10px;background:#bbb;margin:0 auto 25px}
+    .ao-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+    .ao-title{font-size:25px;font-weight:500;color:#292832}
+    .ao-close{border:0;background:none;color:#641bb0;font-size:34px}
+    .ao-description{font-size:15px;line-height:1.5;color:#696570;margin-bottom:30px}
+    .ao-options{background:white;border-radius:17px;padding:5px 20px}
+    .ao-option{width:100%;display:flex;align-items:center;gap:17px;text-align:left;
+      border:0;background:white;padding:20px 0;color:#292832}
+    .ao-option+.ao-option{border-top:1px solid #ddd}
+    .ao-option-icon{font-size:27px;color:#641bb0;width:35px;text-align:center}
+    .ao-option-copy{flex:1}
+    .ao-option-copy strong{display:block;font-size:17px;font-weight:500}
+    .ao-option-copy small{display:block;color:#77737e;font-size:14px;margin-top:4px}
+    .ao-chevron{font-size:30px;color:#641bb0}
+    .ao-field{display:block;margin:18px 0 7px;font-size:14px;color:#555}
+    .ao-input,.ao-select{width:100%;height:53px;border:1px solid #ded9e5;
+      border-radius:12px;background:white;padding:0 14px;font:16px inherit;color:#292832}
+    .ao-primary{width:100%;border:0;border-radius:13px;padding:17px;
+      background:#4a087f;color:white;font-size:16px;font-weight:650;margin-top:25px}
+    .ao-secondary{width:100%;border:1px solid #4a087f;border-radius:13px;
+      padding:15px;background:transparent;color:#4a087f;font-size:15px;margin-top:10px}
+    .ao-info{background:white;border-radius:14px;padding:17px;line-height:1.6;
+      color:#625d68;font-size:14px;margin-top:20px}
+    .ao-status{display:flex;gap:12px;align-items:center;background:white;
+      border-radius:13px;padding:16px;margin-top:12px}
+    .ao-status-icon{font-size:23px;color:#641bb0}
+    .ao-status strong{display:block;color:#292832}
+    .ao-status small{color:#77737e}
+    .ao-hide-menu{position:fixed;z-index:6001;background:#ffffffed;
+      border-radius:60px;padding:18px 35px;box-shadow:0 8px 30px #0002;
+      border:1px solid #eee;display:none;min-width:180px;text-align:center}
+    .ao-hide-menu button{border:0;background:none;font-size:17px;color:#292832}
+    .ao-disclaimer{font-size:11px;line-height:1.5;text-align:center;color:#77737e;margin-top:22px}
+  `;
+  document.head.appendChild(css);
+
+  const overlay = document.createElement("div");
+  overlay.id = "account-options-overlay";
+  overlay.innerHTML = `<section class="ao-sheet" role="dialog" aria-modal="true"></section>`;
+  document.body.appendChild(overlay);
+
+  const sheet = overlay.querySelector(".ao-sheet");
+  const hideMenu = document.createElement("div");
+  hideMenu.className = "ao-hide-menu";
+  hideMenu.innerHTML = `<button type="button">◉̸ &nbsp; Hide</button>`;
+  document.body.appendChild(hideMenu);
+
+  function close() {
+    overlay.classList.remove("open");
+    hideMenu.style.display = "none";
+  }
+
+  function header(title) {
+    return `
+      <div class="ao-handle"></div>
+      <div class="ao-top">
+        <div class="ao-title">${title}</div>
+        <button class="ao-close" data-action="close">×</button>
+      </div>`;
+  }
+
+  function homePage() {
+    sheet.innerHTML = `
+      ${header("Add another account")}
+      <div class="ao-description">
+        View all your external bank accounts and mortgages with other lenders.
+      </div>
+      <div class="ao-options">
+        <button class="ao-option" data-action="bank">
+          <span class="ao-option-icon">♧</span>
+          <span class="ao-option-copy">
+            <strong>Add another bank account</strong>
+            <small>View transactions and balance.</small>
+          </span>
+          <span class="ao-chevron">›</span>
+        </button>
+        <button class="ao-option" data-action="mortgage">
+          <span class="ao-option-icon">⌂</span>
+          <span class="ao-option-copy">
+            <strong>Connect a mortgage</strong>
+            <small>View details and track progress.</small>
+          </span>
+          <span class="ao-chevron">›</span>
+        </button>
+      </div>
+      <div class="ao-disclaimer">Fictional prototype · No real accounts are connected.</div>`;
+    overlay.classList.add("open");
+  }
+
+  function bankPage() {
+    sheet.innerHTML = `
+      ${header("Add another bank account")}
+      <div class="ao-description">
+        Choose a bank to explore the account-connection demonstration.
+      </div>
+      <label class="ao-field" for="ao-bank">Select your bank</label>
+      <select class="ao-select" id="ao-bank">
+        <option value="">Choose a bank</option>
+        <option>Barclays</option>
+        <option>Halifax</option>
+        <option>Lloyds Bank</option>
+        <option>Monzo</option>
+        <option>NatWest</option>
+        <option>Revolut</option>
+        <option>Santander</option>
+        <option>Starling Bank</option>
+        <option>TSB</option>
+      </select>
+      <div class="ao-info">
+        In a real Open Banking connection, you would be redirected to your
+        bank to approve secure access. This prototype does not connect to banks.
+      </div>
+      <button class="ao-primary" data-action="bank-continue">Continue</button>
+      <button class="ao-secondary" data-action="home">Back</button>`;
+  }
+
+  function bankConfirmation(bank) {
+    sheet.innerHTML = `
+      ${header("Account connection")}
+      <div class="ao-status">
+        <span class="ao-status-icon">✓</span>
+        <span><strong>${bank} selected</strong><small>Demo selection completed</small></span>
+      </div>
+      <div class="ao-info">
+        Your next step in a real banking service would be to authorise access
+        through your bank's official secure service.
+        No credentials or financial information have been collected here.
+      </div>
+      <button class="ao-primary" data-action="home">Return to options</button>`;
+  }
+
+  function mortgagePage() {
+    sheet.innerHTML = `
+      ${header("Connect a mortgage")}
+      <div class="ao-description">
+        Enter fictional details to explore the mortgage-tracking demonstration.
+      </div>
+      <label class="ao-field" for="ao-lender">Mortgage lender</label>
+      <select class="ao-select" id="ao-lender">
+        <option value="">Select lender</option>
+        <option>NatWest</option>
+        <option>Halifax</option>
+        <option>Barclays</option>
+        <option>Santander</option>
+        <option>Nationwide</option>
+        <option>Other lender</option>
+      </select>
+      <label class="ao-field" for="ao-reference">Fictional mortgage reference</label>
+      <input class="ao-input" id="ao-reference" placeholder="e.g. DEMO12345">
+      <label class="ao-field" for="ao-postcode">Fictional property postcode</label>
+      <input class="ao-input" id="ao-postcode" placeholder="e.g. LS1 1AA">
+      <div class="ao-info">
+        Use invented details only. This demonstration does not retrieve
+        real mortgage balances or property information.
+      </div>
+      <button class="ao-primary" data-action="mortgage-continue">Continue</button>
+      <button class="ao-secondary" data-action="home">Back</button>`;
+  }
+
+  function mortgageConfirmation(lender) {
+    sheet.innerHTML = `
+      ${header("Mortgage tracking")}
+      <div class="ao-status">
+        <span class="ao-status-icon">✓</span>
+        <span><strong>${lender} selected</strong><small>Demo setup completed</small></span>
+      </div>
+      <div class="ao-info">
+        <strong>Mortgage overview</strong><br>
+        Outstanding balance: Not connected<br>
+        Monthly payment: Not connected<br>
+        Next payment: Not available<br><br>
+        A real mortgage connection would require authorisation from your lender.
+      </div>
+      <button class="ao-primary" data-action="home">Return to options</button>`;
+  }
+
+  document.addEventListener("click", function(event) {
+    const dots = event.target.closest(".add-account .more");
+    const card = event.target.closest(".add-account");
+
+    if (dots) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const rect = dots.getBoundingClientRect();
+      hideMenu.style.display = "block";
+      hideMenu.style.left = Math.max(12, Math.min(rect.left - 90, innerWidth - 200)) + "px";
+      hideMenu.style.top = Math.min(rect.bottom + 8, innerHeight - 80) + "px";
+      return;
+    }
+
+    if (card) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hideMenu.style.display = "none";
+      homePage();
+      return;
+    }
+
+    if (event.target.closest(".ao-hide-menu button")) {
+      document.querySelector(".add-account").style.display = "none";
+      hideMenu.style.display = "none";
+      return;
+    }
+
+    if (event.target === overlay) {
+      close();
+      return;
+    }
+
+    const action = event.target.closest("[data-action]")?.dataset.action;
+    if (!action) return;
+
+    event.preventDefault();
+
+    if (action === "close") close();
+    if (action === "home") homePage();
+    if (action === "bank") bankPage();
+    if (action === "mortgage") mortgagePage();
+
+    if (action === "bank-continue") {
+      const bank = sheet.querySelector("#ao-bank").value;
+      if (!bank) {
+        alert("Please select a bank first.");
+        return;
+      }
+      bankConfirmation(bank);
+    }
+
+    if (action === "mortgage-continue") {
+      const lender = sheet.querySelector("#ao-lender").value;
+      const reference = sheet.querySelector("#ao-reference").value.trim();
+      const postcode = sheet.querySelector("#ao-postcode").value.trim();
+
+      if (!lender || !reference || !postcode) {
+        alert("Please complete all three fields using fictional details.");
+        return;
+      }
+      mortgageConfirmation(lender);
+    }
+  }, true);
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".add-account .more") &&
+        !event.target.closest(".ao-hide-menu")) {
+      hideMenu.style.display = "none";
+    }
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") close();
+  });
+})();
+
+</script>
+
+<style>
+/* Working fictional banking widgets and Insights experience */
+.widget{cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s;min-height:190px}
+.widget:active{transform:scale(.975)}
+.widget:focus-visible{outline:3px solid #783bd1;outline-offset:3px}
+.widget-icon{height:76px;display:grid;place-items:center;margin:12px 0 8px;color:#7136d1}
+.widget-icon svg{width:76px;height:76px;overflow:visible}
+.widget-value{font-variant-numeric:tabular-nums}
+.widget-caption{line-height:1.35}
+.demo-overlay{position:fixed;inset:0;z-index:1200;background:#f1f0f6;overflow-y:auto;padding:24px 18px calc(36px + env(safe-area-inset-bottom));opacity:0;pointer-events:none;transform:translateY(18px);transition:opacity .25s,transform .3s}
+.demo-overlay.open{opacity:1;pointer-events:auto;transform:none}
+.demo-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 24px}
+.demo-head button{width:52px;height:52px;border:0;border-radius:50%;background:#fff;font-size:28px;color:#2b2630}
+.demo-head h2{font-size:23px;font-weight:550;margin:0}
+.score-hero,.score-panel,.insights-card,.insights-detail{background:#fff;border-radius:24px;padding:22px;margin-bottom:16px}
+.score-hero{text-align:center;padding-top:26px}
+.score-number{font-size:58px;line-height:1.1;font-weight:800;color:#292632;font-variant-numeric:tabular-nums}
+.score-status{color:#6330a8;font-size:18px;font-weight:700;margin:8px 0}
+.score-gauge{width:min(290px,80vw);height:auto;display:block;margin:0 auto 5px}
+.score-gauge .track{stroke:#eee7f6;stroke-width:15;fill:none;stroke-linecap:round}
+.score-gauge .progress{stroke:#7136d1;stroke-width:15;fill:none;stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.8s cubic-bezier(.2,.8,.2,1)}
+.score-gauge.animate .progress{stroke-dashoffset:96}
+.score-scale{display:flex;justify-content:space-between;color:#77717e;font-size:12px;margin:0 22px}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score-stat{background:#f7f3fc;border-radius:16px;padding:15px}
+.score-stat strong{display:block;font-size:22px;color:#32263d}
+.score-stat span{font-size:13px;color:#77717e}
+.score-panel h3{margin:0 0 14px;font-size:19px}
+.factor{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #eeeaf2}
+.factor:last-child{border:0}.factor-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#f0e7fc;color:#6731b0;font-size:19px}
+.factor-main{flex:1}.factor-main strong{display:block;font-size:14px}.factor-main small{color:#77717e}.factor-tag{font-size:12px;color:#28835c;font-weight:700}
+.score-bars{height:105px;display:flex;align-items:end;gap:10px;padding:8px 4px 0}.score-bars i{display:block;flex:1;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#9a63e8,#5b1ca8);min-height:12px;animation:barRise .8s ease both;transform-origin:bottom}
+.score-bars i:nth-child(1){height:48%}.score-bars i:nth-child(2){height:56%}.score-bars i:nth-child(3){height:51%}.score-bars i:nth-child(4){height:67%}.score-bars i:nth-child(5){height:73%}.score-bars i:nth-child(6){height:82%}.score-bars i:nth-child(7){height:91%}
+@keyframes barRise{from{transform:scaleY(.08)}to{transform:scaleY(1)}}
+.demo-note{font-size:12px;line-height:1.5;text-align:center;color:#77717e;margin:22px 12px}
+.insights-tabs,.insights-subtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#fff;border-radius:40px;padding:6px;gap:3px;margin-bottom:18px}
+.insights-tabs button,.insights-subtabs button{border:0;background:transparent;border-radius:35px;padding:13px 3px;color:#641bb0;font-size:14px}
+.insights-tabs button.active,.insights-subtabs button.active{background:#351047;color:#fff}
+.insights-subtabs{margin-bottom:30px}
+.insights-content h3{font-size:28px;font-weight:550;margin:0 0 20px}
+.insights-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.insights-card{padding:20px 12px 0;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:230px;margin:0;overflow:hidden}
+.insights-card p{font-size:14px;color:#706b75;line-height:1.4;margin:4px 0 15px}
+.insights-card strong{font-size:25px;font-weight:650;margin-bottom:7px}
+.insights-card small{font-size:14px;color:#706b75;margin-bottom:18px}
+.insights-card button{width:calc(100% + 24px);border:0;border-top:1px solid #eeeaf1;background:#fff;color:#641bb0;padding:16px 4px;font-size:15px}
+.insights-detail{display:none;margin-top:16px}.insights-detail.show{display:block;animation:insightPop .25s ease}
+.insights-detail button{border:0;background:#f1eafa;color:#641bb0;padding:12px 18px;border-radius:25px;margin-top:12px}
+.insights-note{font-size:11px;color:#777;text-align:center;margin:28px 10px 10px}
+@keyframes insightPop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:360px){.insights-card-grid{gap:8px}.insights-card{padding-left:8px;padding-right:8px}.insights-card strong{font-size:22px}.insights-tabs button,.insights-subtabs button{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.demo-overlay,.widget,.score-gauge .progress{transition:none}.score-bars i{animation:none}}
+</style>
+<script>
+(() => {
+  const widgets = [...document.querySelectorAll('.widget')];
+  const credit = widgets.find(el => el.querySelector('.widget-title')?.textContent.trim().toLowerCase() === 'credit score');
+  const weekly = widgets.find(el => el.querySelector('.widget-title')?.textContent.trim().toLowerCase() === 'weekly spend');
+  if (!credit || !weekly) { console.warn('Dashboard widgets were not found; check .widget markup.'); return; }
+
+  const chartIcon = `<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="37" fill="#f3eafd"/><rect x="23" y="12" width="34" height="54" rx="5" fill="#fff" stroke="#6330a8" stroke-width="2"/><path d="M29 54h6V41h6v13h6V29h6v25" fill="none" stroke="#7136d1" stroke-width="3" stroke-linejoin="round"/><path d="M35 18h10" stroke="#6330a8" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="60" r="2" fill="#6330a8"/></svg>`;
+  const scoreIcon = `<svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="35" fill="#f4edfc" stroke="#7136d1" stroke-width="3"/><path d="M17 48a24 24 0 1 1 46 0" fill="none" stroke="#7136d1" stroke-width="7" stroke-linecap="round"/><path d="M40 43l16-15" stroke="#351047" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="43" r="4" fill="#351047"/></svg>`;
+  [credit,weekly].forEach(el => {el.setAttribute('role','button');el.setAttribute('tabindex','0');el.style.cursor='pointer';});
+  credit.querySelector('.widget-icon').innerHTML = scoreIcon;
+  credit.querySelector('.widget-value').textContent = '705';
+  credit.querySelector('.widget-caption').textContent = 'Good · View your score';
+  weekly.querySelector('.widget-icon').innerHTML = chartIcon;
+  weekly.querySelector('.widget-caption').textContent = '2 transactions · Insights';
+
+  function makeOverlay(name, title) {
+    const node = document.createElement('section'); node.className='demo-overlay'; node.id=name; node.setAttribute('aria-label',title);
+    node.innerHTML=`<header class="demo-head"><button type="button" data-close aria-label="Close">×</button><h2>${title}</h2><span style="width:52px"></span></header>`;
+    document.body.appendChild(node);
+    node.querySelector('[data-close]').addEventListener('click',()=>close(node));
+    return node;
+  }
+  function open(node){node.classList.add('open');document.body.style.overflow='hidden';}
+  function close(node){node.classList.remove('open');document.body.style.overflow='';}
+
+  const scoreScreen=makeOverlay('credit-score-demo','Credit score');
+  scoreScreen.innerHTML += `
+    <section class="score-hero">
+      <p style="color:#77717e;margin:0 0 12px">Your fictional credit score</p>
+      <svg class="score-gauge" id="score-gauge" viewBox="0 0 220 145" role="img" aria-label="Credit score 705 out of 850"><path class="track" d="M28 120 A82 82 0 0 1 192 120"/><path class="progress" d="M28 120 A82 82 0 0 1 192 120"/></svg>
+      <div class="score-number" id="score-number">0</div><div class="score-status">Good</div>
+      <div class="score-scale"><span>0</span><span>850</span></div>
+      <p style="color:#77717e;font-size:13px;margin:18px 0 0">Illustrative score · not from a credit reference agency</p>
+    </section>
+    <div class="score-grid"><div class="score-stat"><strong>+24</strong><span>Change in 6 months</span></div><div class="score-stat"><strong>Good</strong><span>Demo score band</span></div><div class="score-stat"><strong>4</strong><span>Positive factors</span></div><div class="score-stat"><strong>1</strong><span>Area to improve</span></div></div>
+    <section class="score-panel" style="margin-top:16px"><h3>Score history</h3><div class="score-bars" aria-label="Illustrative score history"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="display:flex;justify-content:space-between;color:#77717e;font-size:12px;margin-top:8px"><span>6 months ago</span><span>Today</span></div></section>
+    <section class="score-panel"><h3>What's helping your score</h3>
+      <div class="factor"><span class="factor-icon">✓</span><span class="factor-main"><strong>Payment history</strong><small>On-time payments in this demo</small></span><span class="factor-tag">Strong</span></div>
+      <div class="factor"><span class="factor-icon">▤</span><span class="factor-main"><strong>Credit utilisation</strong><small>Low sample utilisation</small></span><span class="factor-tag">Strong</span></div>
+      <div class="factor"><span class="factor-icon">◷</span><span class="factor-main"><strong>Credit history</strong><small>Established sample history</small></span><span class="factor-tag">Good</span></div>
+      <div class="factor"><span class="factor-icon">＋</span><span class="factor-main"><strong>Account mix</strong><small>Variety of sample accounts</small></span><span class="factor-tag">Good</span></div>
+      <div class="factor"><span class="factor-icon">!</span><span class="factor-main"><strong>Recent applications</strong><small>Keep applications spaced out</small></span><span class="factor-tag" style="color:#b17a18">Review</span></div>
+    </section>
+    <section class="score-panel"><h3>Ways to build your score</h3><p>• Pay bills on time and keep balances manageable.</p><p>• Check your credit report for mistakes.</p><p>• Avoid making lots of credit applications close together.</p><p>• Keep older accounts in good order where appropriate.</p></section>
+    <p class="demo-note">Demo only: 705 is a fictional score for this prototype. The factors, history and recommendations are illustrative, not a lender decision or a real credit report.</p>`;
+
+  let scoreTimer;
+  function openScore(){open(scoreScreen);clearInterval(scoreTimer);const num=scoreScreen.querySelector('#score-number'),gauge=scoreScreen.querySelector('#score-gauge');num.textContent='0';gauge.classList.remove('animate');requestAnimationFrame(()=>gauge.classList.add('animate'));let n=0;scoreTimer=setInterval(()=>{n=Math.min(705,n+15);num.textContent=n;if(n>=705)clearInterval(scoreTimer);},24);}
+
+  const insightScreen=makeOverlay('insights-demo','Insights');
+  insightScreen.innerHTML += `
+    <div class="insights-tabs" id="main-insights-tabs"><button class="active" data-tab="Spending">Spending</button><button data-tab="Explore">Explore</button><button data-tab="My Footprint">My Footprint</button></div>
+    <div class="insights-subtabs" id="sub-insights-tabs"><button data-sub="Categories">Categories</button><button class="active" data-sub="Highlights">Highlights</button><button data-sub="Budgets">Budgets</button></div>
+    <div class="insights-content"><h3 id="insights-heading">Recent spending</h3><div class="insights-card-grid" id="insights-cards"></div><div class="insights-detail" id="insights-detail"></div></div>
+    <p class="insights-note">Fictional demonstration only · Sample figures are not connected to a bank or real transactions.</p>`;
+  const datasets={
+    Highlights:[['Top categories last week','£15.17','💡 Bills','£4.25','🚍 Transport'],['Top categories last month','£577.00','••• General','£30.03','🚍 Transport'],["Last month’s summary",'£607.03','Spent','10','Transactions'],['Weekly spend','£19.42','2 transactions','View details','Sample data']],
+    Categories:[['Bills','£15.17','Last week','£62.40','This month'],['Transport','£4.25','Last week','£30.03','This month'],['General','£12.60','Last week','£577.00','This month'],['Shopping','£0.00','Last week','£24.50','This month']],
+    Budgets:[['Monthly budget','£750.00','Sample limit','£577.00','Used'],['General','£100.00','Sample limit','£42.00','Used'],['Transport','£80.00','Sample limit','£30.03','Used'],['Bills','£150.00','Sample limit','£62.40','Used']],
+    Explore:[['Spending trends','£19.42','This week','2','Transactions'],['Top merchant','£4.60','Coffee House','1','Sample visit'],['Daily average','£9.71','This week','7','Days'],['Spending pattern','Stable','Sample trend','2','Transactions']],
+    Footprint:[['Travel footprint','2','Sample journeys','Low','Demo estimate'],['Shopping habits','4','Sample purchases','Typical','Demo pattern'],['Paperless settings','On','Sample setting','100%','Digital'],['Monthly overview','£607.03','Sample spend','10','Transactions']]
+  };
+  let tab='Spending',sub='Highlights';
+  const cards=insightScreen.querySelector('#insights-cards'),heading=insightScreen.querySelector('#insights-heading'),detail=insightScreen.querySelector('#insights-detail');
+  function renderInsights(){heading.textContent=tab==='Spending'?'Recent spending':tab==='Explore'?'Explore your spending':'My spending footprint';const list=tab==='Spending'?(datasets[sub]||datasets.Highlights):tab==='Explore'?datasets.Explore:datasets.Footprint;cards.innerHTML=list.map((r,i)=>`<article class="insights-card"><p>${r[0]}</p><strong>${r[1]}</strong><small>${r[2]}</small><strong>${r[3]}</strong><small>${r[4]}</small><button type="button" data-card="${i}">See details ›</button></article>`).join('');detail.classList.remove('show');detail.innerHTML='';insightScreen.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));insightScreen.querySelectorAll('[data-sub]').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));insightScreen.querySelector('#sub-insights-tabs').style.display=tab==='Spending'?'grid':'none';}
+  insightScreen.querySelector('#main-insights-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;tab=b.dataset.tab;renderInsights();});
+  insightScreen.querySelector('#sub-insights-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b)return;sub=b.dataset.sub;renderInsights();});
+  cards.addEventListener('click',e=>{const b=e.target.closest('[data-card]');if(!b)return;const list=tab==='Spending'?(datasets[sub]||datasets.Highlights):tab==='Explore'?datasets.Explore:datasets.Footprint;const r=list[Number(b.dataset.card)];detail.innerHTML=`<h3>${r[0]}</h3><p><strong>${r[1]}</strong> · ${r[2]}</p><p><strong>${r[3]}</strong> · ${r[4]}</p><p>Example figures from this fictional dashboard.</p><button type="button" id="detail-back">Back to insights</button>`;detail.classList.add('show');detail.querySelector('#detail-back').addEventListener('click',()=>detail.classList.remove('show'));detail.scrollIntoView({behavior:'smooth',block:'nearest'});});
+  function openInsights(){tab='Spending';sub='Highlights';renderInsights();open(insightScreen);}
+  function activate(el,fn){el.addEventListener('click',fn);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});}
+  activate(credit,openScore);activate(weekly,openInsights);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){[scoreScreen,insightScreen].forEach(node=>{if(node.classList.contains('open'))close(node);});}});
+})();
+</script>
+
+</body>
+</html>
